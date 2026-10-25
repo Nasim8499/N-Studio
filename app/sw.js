@@ -1,5 +1,5 @@
 const C = "nstudio-v4";
-const ASSETS = ["./", "index.html", "icon-192.png", "icon-512.png", "icon-maskable-512.png", "apple-touch-icon.png"];
+const ASSETS = ["./", "index.html", "app/icon-192.png", "app/icon-512.png", "app/icon-maskable-512.png", "app/apple-touch-icon.png"];
 self.addEventListener("install", (e) => {
   self.skipWaiting();
   e.waitUntil(caches.open(C).then((c) => c.addAll(ASSETS).catch(() => {})));
