@@ -3,8 +3,8 @@
   "short_name": "N Studio",
   "id": "/",
   "description": "N Studio \u2014 an agent workspace with a live in-app browser, skills, connectors and an installable app.",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "../",
+  "scope": "../",
   "display": "standalone",
   "display_override": [
     "standalone",
