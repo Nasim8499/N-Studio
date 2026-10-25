@@ -80,7 +80,6 @@
   #main.pv-split{ display:block; min-height:0; height:100%; }
   #main.pv-split > .pane:first-child{ margin-right:min(44%,700px); height:100%; }
   #main.pv-split{ position:relative; }
-  #main.pv-split > .dock-global{ position:absolute; left:0; bottom:26px; right:min(44%,700px); margin:0; width:auto; max-width:860px; }
   #main.pv-split > #pvStage{ position:absolute; top:0; right:0; bottom:0; width:min(44%,700px); padding:8px 10px 10px 0; z-index:4; }
   #main.pv-split > .pane:first-child{ flex:1; min-width:0; }
   .nav{ display:flex; align-items:center; gap:11px; height:36px; padding:0 11px; border-radius:11px; font-size:13.5px; color:var(--sub);
@@ -120,10 +119,13 @@
   textarea{ font-family:inherit; }
   textarea::placeholder{ color:var(--faint); }
   .tabbar{ display:none; }
-  .dock-global{ position:absolute; left:0; right:0; bottom:26px; z-index:12; }
+  .sidebar{ z-index:62; }
+  .dock-global{ position:fixed; left:258px; right:0; bottom:26px; z-index:58; padding:6px 18px 10px;
+    background:linear-gradient(180deg,rgba(244,244,246,0) 0%,var(--app-bg) 30%); }
+  html.dark .dock-global{ background:linear-gradient(180deg,rgba(11,11,15,0) 0%,var(--app-bg) 30%); }
   .dock-global > *{ max-width:860px; margin:0 auto; }
-  #main.pv-split > .dock-global{ padding:0 6px 0 16px; }
-  @media (max-width:860px){ .dock-global{ bottom:24px; } }
+  @media (min-width:1181px){ .dock-global.in-split{ right:min(44%,700px); padding-left:16px; padding-right:8px; } }
+  @media (max-width:860px){ .dock-global{ left:0; right:0; bottom:24px; padding:6px 10px 8px; } }
   .dock{ padding-bottom:14px; }
   @media (min-width:1181px){ .has-pv-stage:not(.is-task) .pane:not(#pvStage){ max-width:none; } }
   #main.pv-split > .pane:first-child{ padding-right:0 }
@@ -175,8 +177,8 @@
     .topbar{ height:50px; padding:0 10px; }
     .sidebar.open{ transform:none; }
     .main{ margin:0; height:100dvh; }
-    .dock,.dock-global{ padding:8px 10px calc(10px + env(safe-area-inset-bottom)); }
-    #main.pv-split > .dock-global{ width:auto; left:0; right:0; }
+    .dock,.dock-global{ padding:6px 10px calc(8px + env(safe-area-inset-bottom)); }
+    .dock-global{ left:0; right:0; bottom:24px; }
     .composer{ border-radius:18px !important; }
     .composer .c-top{ flex-wrap:wrap; row-gap:4px; }
     .composer textarea{ min-height:22px !important; max-height:110px !important; }
@@ -200,6 +202,11 @@
   }
   @media (min-width:861px){ .sidebar{ transform:none !important; } .m-head{ display:none; } .m-head-toggle{ display:none !important; } .topbar{ display:none; } }
 
+  .toolstrip{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin:0 0 12px; }
+  .toolstrip .chip{ height:30px; font-size:11.5px; gap:6px; background:var(--card); }
+  .sugg{ display:flex; gap:6px; flex-wrap:wrap; margin:0 0 14px; }
+  .sugg button{ border:1px dashed var(--line-2); background:transparent; color:var(--sub); font-size:12px; border-radius:999px; padding:5px 11px; cursor:pointer; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .sugg button:hover{ color:var(--ink); border-color:var(--line); background:var(--card); }
   #pvChrome{ display:grid; gap:6px; flex:none; padding:0 0 8px; }
   #pvChrome .lbl{ display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:600; letter-spacing:.02em; color:var(--sub) }
   #pvChrome .tr{ flex:1; height:1px; background:var(--line-2) }
@@ -227,6 +234,7 @@
       <div id="topTitle" style="font-size:13.5px;font-weight:600;letter-spacing:-.2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Workspace Studio</div>
       <span style="flex:1"></span>
       <span id="topStatus" style="font-size:11px;color:var(--faint);display:flex;align-items:center;gap:6px"></span>
+      <button class="chip" id="langBtn" onclick="toggleLang()" title="Language / ভাষা" style="height:26px;font-size:11.5px;padding:0 9px;gap:4px">EN · বাংলা</button>
       <button class="iconbtn" onclick="toggleTheme()" id="themeBtn" aria-label="Toggle light and dark mode" title="Light / dark mode">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>
       </button>
@@ -354,7 +362,7 @@ function applyTheme() {
     ? '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>'
     : '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/></svg>';
   const t = document.getElementById("topTitle");
-  if (t) t.textContent = S.route === "task" ? (activeTask()?.title || BRAND) : ({ home: BRAND, computers: "Computers", agents: "Agents", search: "Search", library: "Library", creations: "Creations", skills: "Skills", automations: "Automations", plugins: "Connectors", more: "More" }[S.route] || BRAND);
+  if (t) t.textContent = S.route === "task" ? (activeTask()?.title || BRAND) : ({ home: BRAND, computers: "Computers", agents: "Agents", search: "Search", library: "Library", creations: "Creations", skills: "Skills", automations: "Automations", plugins: "Connectors", account: "Account", more: "More" }[S.route] || BRAND);
 }
 function toggleTheme() { S.theme = S.theme === "dark" ? "light" : "dark"; LS.set("theme", S.theme); document.documentElement.classList.toggle("dark", S.theme === "dark"); applyTheme(); renderSidebar(); }
 applyTheme();
@@ -441,12 +449,18 @@ var ROUTES = [
   { k: "creations", label: "Creations", icon: "spark" },
   { k: "skills", label: "Skills", icon: "spark" },
   { k: "automations", label: "Automations", icon: "auto" },
+  { k: "cases", label: "Cases", icon: "lib" },
+  { k: "applicants", label: "Applicants", icon: "user" },
+  { k: "documents", label: "Documents", icon: "doc" },
+  { k: "jobs", label: "Jobs", icon: "agents" },
+  { k: "reports", label: "Reports", icon: "lib" },
   { k: "plugins", label: "Plugins", icon: "plug" },
   { k: "account", label: "Account", icon: "user" },
   { k: "more", label: "More", icon: "more" },
 ];
 function go(k) {
   S.route = k;
+  if (typeof renderLang === "function") try { renderLang(); } catch (e) {}
   try { history.replaceState(null, "", k === "home" ? location.pathname : "#" + k); } catch (e) {}
   closeRail();
   window.scrollTo(0, 0);
@@ -473,13 +487,13 @@ function renderSidebar() {
   </div>
 
   <div style="padding:0 10px 8px">
-    <button class="nav ${S.route === 'home' ? 'on' : ''}" onclick="go('home')" style="border:1px solid var(--line);background:var(--card)">${ic("plus")} New task
+    <button class="nav ${S.route === 'home' ? 'on' : ''}" onclick="go('home')" style="border:1px solid var(--line);background:var(--card)">${ic("plus")} ${bt("New task")}
       <span style="margin-left:auto" class="kbd">⌘K</span></button>
   </div>
 
   <nav style="padding:0 10px;display:grid;gap:1px" class="scroll">
     ${ROUTES.filter((r) => r.k !== "home").map((r) => `
-      <button class="nav ${S.route === r.k ? 'on' : ''}" onclick="go('${r.k}')">${ic(r.icon)} ${r.label}
+      <button class="nav ${S.route === r.k ? 'on' : ''}" onclick="go('${r.k}')">${ic(r.icon)} ${bt(r.label)}
         ${r.badge ? `<span style="margin-left:auto;font-size:10px;border:1px solid var(--line);background:var(--card);color:var(--sub);border-radius:6px;padding:0 5px">${r.badge}</span>` : ""}
       </button>`).join("")}
   </nav>
@@ -534,12 +548,12 @@ function renderFoot() {
   const el = document.getElementById("appfoot");
   if (!el) return;
   const who = S.user ? S.user.name.split(" ")[0] : "Guest";
-  const st = S.run ? "Agent running" : "Ready";
+  const st = S.run ? bt("Agent running") : bt("Ready");
   el.innerHTML = `<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:6px;height:6px;border-radius:50%;background:${S.run ? "#f97316" : "#22c55e"}"></span><b>${st}</b></span>
     <span class="sep">·</span><span>${gemReady() ? gemLabel() : "no model key"}</span>
-    <span class="sep">·</span><span>${enabledSkills().length} skills</span>
+    <span class="sep">·</span><span>${enabledSkills().length} ${bt("skills")}</span>
     <span style="flex:1"></span>
-    <span>${who}</span><span class="sep">·</span><span>N Studio beta</span>`;
+    <span>${who === "Guest" ? bt("Guest") : who}</span><span class="sep">·</span><span>N Studio beta</span>`;
 }
 
 /* ============================================================
@@ -664,6 +678,8 @@ function gemSystemPrompt() {
     '4) build_site {brief} — build a small website (agency/landing) in the preview panel.',
     "Rules: never invent fees, deadlines or legal requirements. If you are unsure, say so and point to the official portal.",
     skills ? "Active skills:\n" + skills : "",
+    isBn() ? "The user's interface language is Bangla. Always answer in Bangla, keeping official portal names, document titles and numbers in Latin digits only where a form requires it." : "",
+    "You can also act inside the agency workspace with these tools: " + (typeof AGENCY_TOOLS !== "undefined" ? AGENCY_TOOLS.join(", ") : "") + ".",
     "Reply with JSON only when asked for a plan or tool calls.",
   ].filter(Boolean).join("\n");
 }
@@ -935,7 +951,24 @@ async function startRun(text) {
   const token = ++runToken;
   const started = Date.now();
   const msgIdx = t.msgs.length;
-  const msg = { role: "agent", steps: [{ label: "Planning with " + (gemReady() ? "Gemini" : "the built-in knowledge base"), state: "run" }], html: "", time: "0s", engine: gemReady() ? "gemini" : "local" };
+  const bnPlan = (en, bn) => (isBn() ? bn : en);
+  const msg = { role: "agent", steps: [{ label: bnPlan("Planning with " + (gemReady() ? "Gemini" : "the built-in knowledge base"), "পরিকল্পনা তৈরি হচ্ছে" + (gemReady() ? "" : " — বিল্ট-ইন নলেজ বেস")), state: "run" }], html: "", time: "0s", engine: gemReady() ? "gemini" : "local" };
+
+  const agency = (typeof agencyIntent === "function" && !/^(expiry sweep|monthly report)/i.test(text)) ? agencyIntent(text) : null;
+  if (agency) {
+    msg.steps.push({ label: bnPlan("Updating the workspace", "ওয়ার্কস্পেস আপডেট হচ্ছে"), state: "run" });
+    render();
+    await new Promise((r) => setTimeout(r, 450));
+    const out = runAgencyIntent(agency);
+    msg.steps.forEach((s) => { s.state = "done"; });
+    msg.html = out.text || "";
+    msg.time = "1s";
+    S.run = null;
+    try { saveTasks(); } catch (e) {}
+    render();
+    if (out.page) { S.route = out.page; render(); }
+    return;
+  }
   t.msgs.push(msg);
   S.run = { taskId: t.id, token, started, engine: msg.engine };
   renderSidebar();
@@ -1005,11 +1038,11 @@ async function startRun(text) {
             const wantDraft = /\btranslate\b|\bbengali\b|\bcv\b|resume|cover letter|\bemail\b|write to|review my|check my|draft/.test(" " + q.toLowerCase() + " ") || plan.kb === "generic";
             let r;
             if (wantDraft) {
-              const a = draftAnswer(q);
+              const a = (typeof draftAnswerLocalized === "function") ? draftAnswerLocalized(q) : draftAnswer(q);
               r = { title: a.heading, summary: a.intro, points: [], docs: [], fees: "", time: "", sources: [], engine: "local", generic: true, answer: a, query: q };
             } else {
               r = researchFromKB(plan.country, plan.job, q);
-              if (r.generic) { r.answer = draftAnswer(q); r.query = q; }
+              if (r.generic) { r.answer = (typeof draftAnswerLocalized === "function") ? draftAnswerLocalized(q) : draftAnswer(q); r.query = q; }
             }
             return r;
           })();
@@ -1024,9 +1057,13 @@ async function startRun(text) {
       } else {
         msg.page = PAGES.researchCard(research); setPreview(msg.page);
       }
-      answer = research.generic
-        ? "This one is different from the visa pack — I drafted a tailored answer in the preview panel, using what the task already knows. Connect a Gemini key for a live, researched version."
-        : "Here is what I found — the research card in the preview panel has the requirements, the document checklist, fees, timing and the official links.";
+      answer = isBn()
+        ? (research.generic
+          ? "ভিসা প্যাক থেকে আলাদা — প্রিভিউ প্যানেলে আপনার কাজের জন্য একটি খসড়া উত্তর দিলাম। লাইভ রিসার্চের জন্য Gemini কী যুক্ত করুন।"
+          : "যা পেলাম — প্রিভিউ কার্ডে শর্ত, কাগজের তালিকা, ফি, সময় ও সরকারি লিংক আছে।")
+        : (research.generic
+          ? "This one is different from the visa pack — I drafted a tailored answer in the preview panel, using what the task already knows. Connect a Gemini key for a live, researched version."
+          : "Here is what I found — the research card in the preview panel has the requirements, the document checklist, fees, timing and the official links.");
       msg.pages = [{ title: (research.title.split(" — ")[0] || "Research") + " card", type: "research" }, { title: "Visa pack (checklist)", type: "site" }];
     }
     renderPreview(); startBrowserFeed();
@@ -1040,7 +1077,7 @@ async function startRun(text) {
         const fb = localPlan(text, "");
         const r = researchFromKB(fb.country, "", (activeTask()?.msgs || []).filter((m) => m.role === "user").map((m) => m.text).join(" "));
         r.question = r.query;
-        if (r.generic) { r.answer = draftAnswer(r.query); }
+        if (r.generic) { r.answer = (typeof draftAnswerLocalized === "function") ? draftAnswerLocalized(r.query) : draftAnswer(r.query); }
         r.country = fb.country || "Serbia";
         setPreview(PAGES.researchCard(r));
         answer = "I could not reach Gemini, so I rendered the built-in, pre-verified result instead. " + msg.error;
@@ -1476,7 +1513,8 @@ function render() {
   renderSidebar();
   const main = $("#main");
   if (!main) return;
-  const map = { home: homeView, task: taskView, computers: computersView, agents: agentsView, search: searchView, library: libraryView, creations: creationsView, automations: automationsView, skills: skillsView, plugins: pluginsView, account: (typeof accountView === "function" ? accountView : moreView), more: moreView };
+  const map = { home: homeView, task: taskView, computers: computersView, agents: agentsView, search: searchView, library: libraryView, creations: creationsView, automations: (typeof automationsAgencyView === "function" ? automationsAgencyView : automationsView), skills: skillsView, plugins: pluginsView, account: (typeof accountView === "function" ? accountView : moreView), more: moreView,
+    cases: (typeof caseView === "function" ? caseView : moreView), applicants: (typeof applicantView === "function" ? applicantView : moreView), documents: (typeof docsView === "function" ? docsView : moreView), jobs: (typeof jobsView === "function" ? jobsView : moreView), reports: (typeof reportView === "function" ? reportView : moreView) };
   const routeChanged = LAST_ROUTE !== S.route;
   const content = (map[S.route] || homeView)();
   const showDock = !content.includes('id="prompt"');
@@ -1487,7 +1525,7 @@ function render() {
   main.classList.toggle("pv-split", split);
   document.body.classList.toggle("has-pv-stage", split);
   if (split) { const kb = main.querySelector("#pvStage > .preview-col > div"); if (kb) { kb.style.flex = "1"; kb.style.minHeight = "0"; } const pc = main.querySelector("#pvStage > .preview-col"); if (pc) { pc.style.height = "100%"; } }
-  main.innerHTML = content + stage + (showDock ? `<div class="dock dock-global">${composerHTML(false)}</div>` : "");
+  main.innerHTML = content + stage + (showDock ? `<div class="dock dock-global${split ? " in-split" : ""}">${composerHTML(false)}</div>` : "");
   if (wide) { const ds = main.querySelector("#pvStage > .preview-col"); if (ds) { ds.style.height = "100%"; ds.style.minHeight = "0"; } }
   try { renderFoot(); } catch (e) {}
   document.body.classList.toggle("is-task", onTask);
@@ -1497,6 +1535,7 @@ function render() {
     const sc = $("#chatScroll"); if (sc) sc.scrollTop = sc.scrollHeight;
     const ta = $("#prompt"); if (ta && routeChanged) ta.offsetHeight && autoGrow(ta);
   }
+  try { if (typeof trTree === "function") trTree(main); } catch (e) {}
   const st0 = $("#pvStage");
   if (st0 && st0.style.display !== "none") { st0.style.opacity = "0"; setTimeout(() => { const st1 = $("#pvStage"); if (st1) { renderPreview(); st1.style.opacity = "1"; st1.style.pointerEvents = "auto"; } }, 30); }
 }
@@ -1523,13 +1562,55 @@ function mHead(title, opts = {}) {
     <span style="flex:1"></span>${opts.right || `<button class="iconbtn" onclick="newTaskGo()">${ic("plus", 19)}</button>`}
   </div>`;
 }
+function toolStrip(extra = "") {
+  const T = (s2) => (typeof bt === "function" ? bt(s2) : s2);
+  const tools = [
+    { icon: "pc", label: "Computers", k: "computers" },
+    { icon: "agents", label: "Agents", k: "agents" },
+    { icon: "search", label: "Search", k: "search" },
+    { icon: "lib", label: "Cases", k: "cases" },
+    { icon: "user", label: "Applicants", k: "applicants" },
+    { icon: "doc", label: "Documents", k: "documents" },
+    { icon: "auto", label: "Automations", k: "automations" },
+    { icon: "lib", label: "Reports", k: "reports" },
+  ];
+  return `<div class="toolstrip">
+    ${tools.map((t) => `<button class="chip" onclick="go('${t.k}')">${ic(t.icon, 13)} ${T(t.label)}</button>`).join("")}
+    ${extra}
+  </div>`;
+}
+var SUGGEST = {
+  home: ["Serbia work permit checklist", "UK Skilled Worker eligibility", "Japan SSW steps", "Build a visa agency website"],
+  cases: ["Create a case from a passport scan", "Which cases are stuck at the embassy?", "Draft a fee reminder to 3 applicants"],
+  applicants: ["Add an applicant from a CV", "Who is missing a police clearance?", "List applicants for Serbia"],
+  documents: ["Which documents expire this month?", "Build a pack for the newest case", "Ask applicant for bank statement"],
+  jobs: ["Add a welding job in Serbia", "Which job has unfilled quota?", "Draft a job advert"],
+  reports: ["Monthly summary for my agency", "Fees collected this month", "Success rate by country"],
+  computers: ["Watch a portal for changes", "Fill the embassy form for me", "Read a notice page and summarise"],
+  agents: ["Which agent should handle documents?", "Switch to the site builder", "Explain what each agent does"],
+  search: ["Latest Serbia permit fee change", "UK sponsor licence check", "Japan SSW test centres in Dhaka"],
+  library: ["Open the newest checklist", "Find the Serbia research card", "Delete old drafts"],
+  creations: ["Build a landing page", "Make a fee sheet PDF", "Design an intake form page"],
+  skills: ["Enable every document skill", "Turn off the site builder", "What does document review do?"],
+  automations: ["Re-check fees every morning", "Follow up on submitted cases weekly", "Alert me before documents expire"],
+  plugins: ["Connect Gemini", "Test my Gemini key", "Which connectors are ready?"],
+  account: ["Switch account", "Export my data", "Install the app"],
+  more: ["Change the language to Bangla", "Clear this device", "Open settings"],
+};
+function suggestionRow(key) {
+  const list = SUGGEST[key];
+  if (!list || !list.length) return "";
+  return `<div class="sugg">${list.map((t) => `<button onclick="quickStart('${esc(t)}')" title="${esc(t)}">${esc(t.length > 44 ? t.slice(0, 42) + "…" : t)}</button>`).join("")}</div>`;
+}
 function pageHead(title, sub, actions = "") {
-  return `<div class="m-head" style="position:static;background:transparent;border:0;padding:0;height:auto;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+  const key = (S.route || "home");
+  const strip = key === "home" ? "" : toolStrip();
+  return `${strip}<div class="m-head" style="position:static;background:transparent;border:0;padding:0;height:auto;margin-bottom:14px;flex-wrap:wrap;gap:10px;display:flex!important">
     <div style="flex:1;min-width:180px"><h1 style="margin:0;font-size:21px;letter-spacing:-.5px;font-weight:650">${esc(title)}</h1>
       ${sub ? `<p style="margin:3px 0 0;font-size:13px;color:var(--sub)">${esc(sub)}</p>` : ""}</div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap">${actions}</div></div>`;
+    <div style="display:flex;gap:6px;flex-wrap:wrap">${actions}</div></div>${suggestionRow(key)}`;
 }
-var wrap = (inner, extra = "") => `<div class="pane" style="background:transparent;height:100%;display:flex;flex-direction:column"><div class="scroll" style="flex:1;min-height:0;overflow-y:auto"><div style="max-width:980px;margin:0 auto;padding:18px 16px calc(96px + env(safe-area-inset-bottom))" class="${extra}">${inner}</div></div></div>`;
+var wrap = (inner, extra = "") => `<div class="pane" style="background:transparent;height:100%;display:flex;flex-direction:column"><div class="scroll" style="flex:1;min-height:0;overflow-y:auto"><div style="max-width:980px;margin:0 auto;padding:18px 16px calc(150px + env(safe-area-inset-bottom))" class="${extra}">${inner}</div></div></div>`;
 
 /* ---------- Home (new task) ---------- */
 function homeView() {
@@ -1548,9 +1629,11 @@ function homeView() {
         <p style="font-size:13.5px;color:var(--sub);margin:0 0 18px;max-width:52ch">Your agent runs on a cloud computer — it researches the live web, fills forms and builds pages in the preview panel.</p>
         ${(!S.tasks.some((t) => (t.msgs || []).some((m) => m.role === "agent"))) ? `<div style="margin:0 0 18px">${composerHTML(true)}</div>` : ""}
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px">
-          ${["Serbia work permit checklist", "Build a visa agency website", "UK Skilled Worker requirements", "Japan SSW visa steps"].map((p) =>
+          ${(isBn() ? ["সার্বিয়ার ওয়ার্ক পারমিট চেকলিস্ট", "ভিসা এজেন্সির ওয়েবসাইট বানাও", "UK স্কিলড ওয়ার্কার শর্ত", "জাপান SSW ধাপ"] : ["Serbia work permit checklist", "Build a visa agency website", "UK Skilled Worker requirements", "Japan SSW visa steps"]).map((p) =>
             `<button class="chip" onclick="quickStart('${esc(p)}')">${esc(p)}</button>`).join("")}
         </div>
+        ${toolStrip()}
+        ${suggestionRow("home")}
         <div class="cap" style="margin-bottom:8px">Tools</div>
         <div class="toolgrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:8px;margin-bottom:12px">
           ${chips.map((c) => `<button class="card" style="height:58px;display:flex;align-items:center;gap:10px;padding:0 13px;text-align:left;cursor:pointer;border-radius:14px;background:var(--card);border:1px solid var(--line);box-shadow:none" onclick="go('${c.k}')">
@@ -1608,7 +1691,12 @@ function browse(accept, label) {
     FILE_IN.type = "file"; FILE_IN.style.display = "none";
     FILE_IN.onchange = () => {
       const f = FILE_IN.files && FILE_IN.files[0];
-      if (f) { S.file = f.name; toast("Attached " + f.name); render(); }
+      if (f) {
+        S.file = f.name;
+        if (typeof attachRead === "function") attachRead(f);
+        else toast((typeof isBn === "function" && isBn() ? "যুক্ত হয়েছে " : "Attached ") + f.name);
+        render();
+      }
       FILE_IN.value = "";
     };
     document.body.appendChild(FILE_IN);
@@ -1622,10 +1710,10 @@ function pickImage() { browse("image/*", "Attach image"); }
 function pickFolder() { browse(".pdf,.doc,.docx,.jpg,.png,.txt", "Attach from folder"); }
 function toggleVoice() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SR) { toast("Voice input is not supported in this browser"); return; }
+  if (!SR) { toast((typeof isBn === "function" && isBn()) ? "এই ব্রাউজারে ভয়েস কাজ করে না" : "Voice input is not supported in this browser"); return; }
   if (S.voice) { try { S.voice.stop(); } catch (e) {} S.voice = null; render(); return; }
   const r = new SR();
-  r.lang = "en-US"; r.interimResults = true; r.continuous = false;
+  r.lang = (typeof isBn === "function" && isBn()) ? "bn-BD" : "en-US"; r.interimResults = true; r.continuous = false;
   S.voice = r;
   r.onresult = (e) => {
     let txt = "";
@@ -1634,7 +1722,7 @@ function toggleVoice() {
   };
   r.onerror = () => { S.voice = null; render(); toast("Could not hear you — try again"); };
   r.onend = () => { S.voice = null; render(); };
-  try { r.start(); toast("Listening…"); } catch (e) { S.voice = null; }
+  try { r.start(); toast((typeof isBn === "function" && isBn()) ? "শুনছি…" : "Listening…"); } catch (e) { S.voice = null; }
   render();
 }
 function autoGrow(el) { el.style.height = "auto"; el.style.height = Math.min(el.scrollHeight, 180) + "px"; }
@@ -1646,7 +1734,13 @@ function newTaskGo(text) {
 }
 function submitPrompt() {
   const el = $("#prompt");
-  const text = (el?.value || "").trim();
+  let text = (el?.value || "").trim();
+  if (S.att && S.att.text && !S.att.used) {
+    const g = (typeof attachParse === "function") ? attachParse(S.att.text) : null;
+    const facts = g ? Object.entries(g).map(([k, v2]) => k + ": " + v2).join(", ") : "";
+    text = (text || (typeof isBn === "function" && isBn() ? "এই ফাইল দিয়ে একটি কেস তৈরি করুন" : "Create a case from this file")) + " · " + (typeof isBn === "function" && isBn() ? "সংযুক্ত ফাইল: " : "Attached file: ") + S.att.name + (facts ? " (" + facts + ")" : "");
+    S.att.used = true;
+  }
   if (!text || S.run) return;
   const wasHome = S.route !== "task";
   const wasId = S.activeId;
@@ -2610,6 +2704,881 @@ function runConnector(id) {
   return openConnector(id);
 }
 window.runConnector = runConnector;
+
+/* ============================================================
+   Bangla native layer — EN ↔ বাংলা for the whole interface
+   ============================================================ */
+var BN = {
+  "New task": "নতুন কাজ", "Computers": "কম্পিউটার", "Agents": "এজেন্ট", "Search": "খুঁজুন",
+  "Library": "লাইব্রেরি", "Creations": "তৈরি করা", "Skills": "স্কিল", "Automations": "অটোমেশন",
+  "Plugins": "প্লাগইন", "Account": "অ্যাকাউন্ট", "More": "আরও", "Projects": "প্রজেক্ট",
+  "New project": "নতুন প্রজেক্ট", "Tasks": "কাজসমূহ", "No tasks yet": "এখনো কোনো কাজ নেই",
+  "Sign in": "সাইন ইন", "Sign up": "সাইন আপ", "Sign out": "সাইন আউট", "Guest": "অতিথি",
+  "Ready": "প্রস্তুত", "Agent running": "এজেন্ট চলছে", "no model key": "মডেল কী নেই", "skills": "স্কিল",
+  "What can I do for you?": "আমি আপনার কী কাজ করতে পারি?",
+  "Explore N Studio": "N Studio দেখুন", "See what's new": "নতুন কী আছে দেখুন",
+  "Stopped": "বন্ধ", "Running": "চলছে", "Auto": "স্বয়ংক্রিয়", "Cloud": "ক্লাউড",
+  "Describe your task…": "আপনার কাজ লিখুন…",
+  "Describe your task — paste a passport detail, a job offer, or a link…": "কাজ লিখুন — পাসপোর্টের তথ্য, জব অফার বা লিংক পেস্ট করুন…",
+  "Ask for a follow-up…": "পরবর্তী নির্দেশ লিখুন…", "Preview": "প্রিভিউ", "Take over": "নিয়ন্ত্রণ নিন",
+  "Publish": "প্রকাশ", "Tools": "টুলস", "Recent tasks": "সাম্প্রতিক কাজ", "Your first task will show up here.": "আপনার প্রথম কাজ এখানে দেখা যাবে।",
+  "Cloud computers": "ক্লাউড কম্পিউটার", "Each task gets a fresh machine with a real browser. Watch it in the preview panel.": "প্রতিটি কাজের জন্য নতুন মেশিন ও আসল ব্রাউজার। প্রিভিউ প্যানেলে দেখুন।",
+  "New computer": "নতুন কম্পিউটার", "Watch live": "লাইভ দেখুন",
+  "Agents": "এজেন্ট", "Pick a specialist, or let the default agent route the task.": "একটি বিশেষজ্ঞ বেছে নিন, অথবা ডিফল্ট এজেন্টকে কাজ ভাগ করতে দিন।",
+  "Manage skills": "স্কিল ম্যানেজ", "Search": "খুঁজুন", "Researched sources, filtered to official and licensed-agency pages.": "রিসার্চ করা সূত্র — শুধু সরকারি ও লাইসেন্সধারী এজেন্সির পাতা।",
+  "Library": "লাইব্রেরি", "Everything your agents built, researched or saved.": "এজেন্ট যা বানিয়েছে, রিসার্চ করেছে বা সেভ করেছে — সব এখানে।",
+  "Creations": "তৈরি করা", "Pages the agent has built — open one in the preview panel.": "এজেন্টের বানানো পেজ — প্রিভিউ প্যানেলে খুলুন।", "Build something": "কিছু বানান",
+  "Skills": "স্কিল", "Capabilities the agent loads into every task.": "প্রতিটি কাজে এজেন্ট যে সামর্থ্যগুলো ব্যবহার করে।",
+  "Enable all": "সব চালু", "None": "কিছু না", "Run with this skill": "এই স্কিল দিয়ে চালান",
+  "Automations": "অটোমেশন", "Scheduled agent work. Runs while N Studio is open, and catches up on missed runs when you come back.": "নির্ধারিত সময়ে এজেন্টের কাজ। N Studio খোলা থাকলে চলে, ফিরে এলে বাদ পড়া কাজও সারিয়ে নেয়।",
+  "New automation": "নতুন অটোমেশন", "Scheduled": "নির্ধারিত", "Total": "মোট", "Runs logged": "রান হিসাব",
+  "Run now": "এখনই চালান", "Remove": "মুছুন", "Pause": "বিরতি", "Resume": "চালু করুন", "Open last run": "শেষ রান খুলুন",
+  "Plugins": "প্লাগইন", "Connectors": "কানেক্টর", "Live capabilities the agent can use — keys stay on this device.": "এজেন্ট যে লাইভ সুবিধা ব্যবহার করতে পারে — কী শুধু এই ডিভাইসে থাকে।",
+  "Connect": "কানেক্ট", "Connected": "কানেক্টেড", "Not connected": "কানেক্টেড নয়", "Test": "পরীক্ষা", "Disconnect": "বিচ্ছিন্ন",
+  "Account": "অ্যাকাউন্ট", "Signed in on this device": "এই ডিভাইসে সাইন ইন করা আছে", "Saved pages": "সেভ করা পেজ", "Skills on": "চালু স্কিল",
+  "Keys on this device": "এই ডিভাইসের কী", "App": "অ্যাপ", "Install app": "অ্যাপ ইনস্টল", "Dark mode": "ডার্ক মোড", "Light mode": "লাইট মোড", "Switch account": "অ্যাকাউন্ট বদলান",
+  "More": "আরও", "Settings that actually change something.": "যে সেটিংস সত্যিই কিছু বদলায়।",
+  "Export data": "ডেটা এক্সপোর্ট", "Import data": "ডেটা ইমপোর্ট", "Clear device data": "ডিভাইস ডেটা মুছুন",
+  "Language": "ভাষা", "Bangla": "বাংলা", "English": "ইংরেজি",
+  "Cases": "কেস", "Applicants": "আবেদনকারী", "Documents": "কাগজপত্র", "Jobs": "চাকরি", "Reports": "রিপোর্ট",
+  "New case": "নতুন কেস", "New applicant": "নতুন আবেদনকারী", "New job": "নতুন চাকরি",
+  "Passport": "পাসপোর্ট", "Police clearance": "পুলিশ ক্লিয়ারেন্স", "Medical certificate": "মেডিকেল সার্টিফিকেট",
+  "Bank statement": "ব্যাংক স্টেটমেন্ট", "Experience letter": "অভিজ্ঞতার সার্টিফিকেট", "Photos": "ছবি", "CV": "সিভি",
+  "Submitted": "জমা দেওয়া", "Approved": "অনুমোদিত", "Departed": "প্রস্থান", "Pending": "অপেক্ষমাণ", "Missing": "নেই",
+  "Days left": "দিন বাকি", "Expired": "মেয়াদ শেষ", "Owner": "দায়িত্বে", "Stage": "ধাপ", "Salary": "বেতন", "Country": "দেশ",
+  "Status": "অবস্থা", "Actions": "কার্যক্রম", "Total cases": "মোট কেস", "Open cases": "চলমান কেস", "Approved this month": "এই মাসে অনুমোদিত",
+  "Fees collected": "আদায়কৃত ফি", "Success rate": "সফলতার হার", "By country": "দেশ অনুযায়ী", "By stage": "ধাপ অনুযায়ী",
+  "This month": "এই মাস", "Last month": "গত মাস", "All time": "সর্বকাল", "Export CSV": "CSV এক্সপোর্ট",
+  "Sign in to save cases across this device": "কেস সেভ করতে সাইন ইন করুন", "Create account": "অ্যাকাউন্ট খুলুন",
+  "Email": "ইমেইল", "Password": "পাসওয়ার্ড", "Name": "নাম", "Continue as guest": "অতিথি হিসেবে চালিয়ে যান",
+  "Delete": "মুছুন", "Save": "সেভ", "Cancel": "বাতিল", "Close": "বন্ধ", "Edit": "সম্পাদনা", "Add": "যোগ করুন",
+  "Filters": "ফিল্টার", "All": "সব", "Open": "খোলা", "Team": "টিম", "Notifications": "নোটিফিকেশন",
+  "Bangla replies": "বাংলায় উত্তর", "Workspace": "ওয়ার্কস্পেস", "Agency": "এজেন্সি", "Agency settings": "এজেন্সি সেটিংস",
+  "Create a case from a passport scan": "পাসপোর্ট স্ক্যান থেকে কেস বানান", "Which cases are stuck at the embassy?": "কোন কেসগুলো এমব্যাসিতে আটকে আছে?",
+  "Draft a fee reminder to 3 applicants": "৩ জন আবেদনকারীকে ফি-রিমাইন্ডার খসড়া করুন",
+  "UK Skilled Worker eligibility": "UK স্কিলড ওয়ার্কারের যোগ্যতা", "Japan SSW steps": "জাপান SSW ধাপ", "Build a visa agency website": "ভিসা এজেন্সির ওয়েবসাইট বানাও",
+  "Export CSV": "CSV এক্সপোর্ট", "Export CSV": "CSV এক্সপোর্ট", "Open cases": "চলমান কেস", "Total cases": "মোট কেস",
+  "Requests": "অনুরোধ", "Activity": "কার্যক্রম", "Search…": "খুঁজুন…", "Search": "খুঁজুন"
+};
+BN["Export CSV"] = "CSV এক্সপোর্ট";
+Object.assign(BN, {
+  "Create a case from a passport scan": "পাসপোর্ট স্ক্যান থেকে কেস বানান",
+  "Which cases are stuck at the embassy?": "কোন কেসগুলো এমব্যাসিতে আটকে আছে?",
+  "Draft a fee reminder to 3 applicants": "৩ জন আবেদনকারীকে ফি-রিমাইন্ডার খসড়া করুন",
+  "Add an applicant from a CV": "সিভি থেকে আবেদনকারী যোগ করুন",
+  "Who is missing a police clearance?": "কার পুলিশ ক্লিয়ারেন্স নেই?",
+  "List applicants for Serbia": "সার্বিয়ার আবেদনকারীদের তালিকা",
+  "Which documents expire this month?": "এই মাসে কোন কাগজের মেয়াদ শেষ?",
+  "Build a pack for the newest case": "নতুন কেসের জন্য প্যাক বানাও",
+  "Ask applicant for bank statement": "আবেদনকারীর কাছে ব্যাংক স্টেটমেন্ট চাও",
+  "Add a welding job in Serbia": "সার্বিয়ায় ওয়েল্ডিং চাকরি যোগ করুন",
+  "Which job has unfilled quota?": "কোন চাকরির কোটা বাকি?",
+  "Draft a job advert": "জব বিজ্ঞাপনের খসড়া",
+  "Monthly summary for my agency": "আমার এজেন্সির মাসিক সারসংক্ষেপ",
+  "Fees collected this month": "এই মাসে আদায়কৃত ফি",
+  "Success rate by country": "দেশ অনুযায়ী সফলতার হার",
+  "Watch a portal for changes": "পোর্টালের পরিবর্তন লক্ষ্য করুন",
+  "Fill the embassy form for me": "আমার হয়ে এমব্যাসি ফর্ম পূরণ করুন",
+  "Read a notice page and summarise": "নোটিশ পাতা পড়ে সারসংক্ষেপ দিন",
+  "Which agent should handle documents?": "কাগজপত্রের কাজ কোন এজেন্ট করবে?",
+  "Switch to the site builder": "সাইট বিল্ডারে যান",
+  "Explain what each agent does": "প্রতিটি এজেন্ট কী করে বুঝিয়ে দিন",
+  "Latest Serbia permit fee change": "সার্বিয়া পারমিট ফির সর্বশেষ পরিবর্তন",
+  "UK sponsor licence check": "UK স্পনসর লাইসেন্স যাচাই",
+  "Japan SSW test centres in Dhaka": "ঢাকায় জাপান SSW টেস্ট সেন্টার",
+  "Open the newest checklist": "নতুন চেকলিস্ট খুলুন",
+  "Find the Serbia research card": "সার্বিয়া রিসার্চ কার্ড খুঁজুন",
+  "Delete old drafts": "পুরোনো খসড়া মুছুন",
+  "Build a landing page": "ল্যান্ডিং পেজ বানান",
+  "Make a fee sheet PDF": "ফি শিট PDF বানান",
+  "Design an intake form page": "ইনটেক ফর্ম পেজ ডিজাইন করুন",
+  "Enable every document skill": "সব ডকুমেন্ট স্কিল চালু করুন",
+  "Turn off the site builder": "সাইট বিল্ডার বন্ধ করুন",
+  "What does document review do?": "ডকুমেন্ট রিভিউ কী করে?",
+  "Re-check fees every morning": "প্রতিদিন সকালে ফি যাচাই",
+  "Follow up on submitted cases weekly": "সাপ্তাহিক জমা কেসের ফলো-আপ",
+  "Alert me before documents expire": "কাগজের মেয়াদ শেষের আগে জানান",
+  "Connect Gemini": "Gemini কানেক্ট করুন",
+  "Test my Gemini key": "আমার Gemini কী পরীক্ষা করুন",
+  "Which connectors are ready?": "কোন কানেক্টর প্রস্তুত?",
+  "Switch account": "অ্যাকাউন্ট বদলান",
+  "Export my data": "আমার ডেটা এক্সপোর্ট",
+  "Install the app": "অ্যাপ ইনস্টল করুন",
+  "Change the language to Bangla": "ভাষা বাংলায় বদলান",
+  "Clear this device": "এই ডিভাইস মুছুন",
+  "Open settings": "সেটিংস খুলুন"
+});
+BN["Export data"] = "ডেটা এক্সপোর্ট";
+function lang() { return LS.get("lang", "en") === "bn" ? "bn" : "en"; }
+function isBn() { return lang() === "bn"; }
+function bt(s) { return isBn() ? (BN[s] || s) : s; }
+function toggleLang() {
+  LS.set("lang", isBn() ? "en" : "bn");
+  renderLang();
+  render();
+  renderSidebar();
+  toast(isBn() ? "বাংলা চালু হলো" : "Switched to English");
+}
+function renderLang() {
+  const b = document.getElementById("langBtn");
+  if (b) b.textContent = isBn() ? "বাংলা · EN" : "EN · বাংলা";
+  document.documentElement.lang = isBn() ? "bn" : "en";
+  document.documentElement.classList.toggle("bn", isBn());
+}
+function bnNode(n) {
+  const t = n.textContent;
+  const s = BN[t.trim()];
+  if (s && n.children.length === 0) n.textContent = s;
+}
+function trTree(root) {
+  if (!isBn() || !root) return;
+  const sel = "button, .nav, .row-task, h1, h2, .cap, .chip, .tab, label, th, .empty, .kv > span:first-child, .muted";
+  root.querySelectorAll(sel).forEach((n) => { try { bnNode(n); } catch (e) {} });
+}
+
+/* ---------- workspace data helpers (storage is per account) ---------- */
+function scopeKey(k) {
+  const u = (S.user && S.user.email) ? S.user.email.replace(/[^a-z0-9]/gi, "").toLowerCase() : "device";
+  return k === "cases" || k === "applicants" || k === "docs" || k === "positions" || k === "agency" ? u + ":" + k : k;
+}
+function gs(k, d) { return LS.get(scopeKey(k), d); }
+function ss(k, v) { LS.set(scopeKey(k), v); }
+function money(n, cur) {
+  const v = Math.round(Number(n) || 0);
+  const b = cur || (gs("agency", null) && gs("agency", null).cur) || "BDT";
+  const s = v.toLocaleString("en-IN");
+  if (b === "BDT") return isBn() ? "৳" + bnDigits(s) : "BDT " + s;
+  if (b === "EUR") return "€" + s;
+  if (b === "GBP") return "£" + s;
+  return "$" + s;
+}
+function bnDigits(s) {
+  if (!isBn()) return String(s);
+  return String(s).replace(/[0-9]/g, (d) => "০১২৩৪৫৬৭৮৯"[Number(d)]);
+}
+function daysTo(dateStr) { if (!dateStr) return null; return Math.ceil((new Date(dateStr + "T00:00:00").getTime() - Date.now()) / 86400000); }
+function stageId(s) { return s; }
+var CASES = {
+  stages: [
+    { k: "new", en: "New", bn: "নতুন" },
+    { k: "docs", en: "Documents", bn: "কাগজপত্র" },
+    { k: "submitted", en: "Submitted", bn: "জমা" },
+    { k: "embassy", en: "Embassy", bn: "এমব্যাসি" },
+    { k: "approved", en: "Approved", bn: "অনুমোদিত" },
+    { k: "departed", en: "Departed", bn: "প্রস্থান" },
+  ],
+  st(k) { return this.stages.find((s) => s.k === k) || this.stages[0]; },
+};
+function caseList() { return gs("cases", []); }
+function saveCaseList(v) { ss("cases", v); }
+function applicantList() { return gs("applicants", []); }
+function saveApplicants(v) { ss("applicants", v); }
+function docList() { return gs("docs", []); }
+function saveDocs(v) { ss("docs", v); }
+function jobList() { return gs("positions", []); }
+function saveJobs(v) { ss("positions", v); }
+function nextRef(prefix) {
+  const n = gs("agency", null) && gs("agency", null).seq ? gs("agency", null).seq : { case: 1000, job: 200 };
+  const year = new Date().getFullYear();
+  n[prefix] = (n[prefix] || 0) + 1;
+  ss("agencySeqTmp", n);
+  return (prefix === "case" ? "VH-" : "JOB-") + year + "-" + n[prefix];
+}
+function bumpSeq(prefix) {
+  const a = gs("agency", null) || {};
+  a.seq = a.seq || { case: 1000, job: 200 };
+  a.seq[prefix] = (a.seq[prefix] || 0) + 1;
+  ss("agency", a);
+  return (prefix === "case" ? "VH-" : "JOB-") + new Date().getFullYear() + "-" + a.seq[prefix];
+}
+function caseStageLabel(k) { const s = CASES.st(k); return isBn() ? s.bn : s.en; }
+
+/* ---------- Shared visa document flow + demo agency book ---------- */
+var DOC_FLOW = ["passport", "photo", "cv", "exp", "edu", "med", "police", "bank"];
+var AGENCY_SEED = [
+  { name: "Md Rakib Hasan", country: "Serbia", job: "Welder", stage: "docs", feePaid: 45000, feeDue: 15000, trade: "6G welder", phone: "01711-204455", docs: ["passport", "photo", "cv", "exp"] },
+  { name: "Sumaiya Akter", country: "Romania", job: "Sewing operator", stage: "submitted", feePaid: 95000, feeDue: 0, trade: "Garment operator", phone: "01822-771100", docs: ["passport", "photo", "cv", "exp", "edu", "med"] },
+  { name: "Jahangir Alam", country: "Croatia", job: "Scaffolder", stage: "embassy", feePaid: 120000, feeDue: 30000, trade: "Scaffolder", phone: "01933-552210", docs: DOC_FLOW.slice(0, 7) },
+  { name: "Nazmul Islam", country: "Serbia", job: "CNC operator", stage: "approved", feePaid: 210000, feeDue: 0, trade: "CNC machinist", phone: "01611-908877", docs: DOC_FLOW.slice() },
+  { name: "Rehana Parvin", country: "UAE", job: "Housemaid", stage: "departed", feePaid: 68000, feeDue: 0, trade: "Housekeeping", phone: "01755-330091", docs: DOC_FLOW.slice() },
+  { name: "Sohel Rana", country: "Poland", job: "Warehouse picker", stage: "new", feePaid: 0, feeDue: 0, trade: "Warehouse", phone: "01521-664422", docs: [] },
+];
+function seedAgency(force) {
+  if (!force && (caseList().length || LS.get(scopeKey("casesSeeded"), false))) return;
+  const cases = [], apps = [], docs = [];
+  const today = Date.now();
+  AGENCY_SEED.forEach((p, i) => {
+    const id = rid();
+    const created = today - (i + 1) * 86400000 * 6;
+    cases.push({ id, ref: "VH-" + new Date().getFullYear() + "-" + (1001 + i), applicant: p.name, country: p.country, job: p.job, stage: p.stage, created, updated: created + 86400000, feePaid: p.feePaid, feeDue: p.feeDue, owner: "Office", notes: p.trade + " · " + p.phone, history: [{ stage: "new", at: created, by: "You" }, { stage: p.stage, at: created + 86400000 * 2, by: "Office" }] });
+    apps.push({ id: rid(), name: p.name, country: p.country, job: p.job, phone: p.phone, email: p.name.toLowerCase().replace(/[^a-z]/g, ".") + "@example.com", created });
+    p.docs.forEach((t, j) => docs.push({ id: rid(), caseId: id, ref: "VH-" + new Date().getFullYear() + "-" + (1001 + i), applicant: p.name, type: t, name: "", added: created + 86400000, expiry: (t === "passport" || t === "med") ? new Date(today + (j % 2 ? 45 : 400) * 86400000).toISOString().slice(0, 10) : "" }));
+  });
+  saveCaseList(cases); saveApplicants(apps); saveDocs(docs);
+  if (!jobList().length) saveJobs([
+    { id: rid(), ref: "JOB-" + new Date().getFullYear() + "-201", title: "Welder", country: "Serbia", employer: "Subotica Steel", salary: 900, cur: "EUR", quota: 12, created: today },
+    { id: rid(), ref: "JOB-" + new Date().getFullYear() + "-202", title: "Sewing operator", country: "Romania", employer: "Timisoara Garments", salary: 750, cur: "EUR", quota: 20, created: today },
+    { id: rid(), ref: "JOB-" + new Date().getFullYear() + "-203", title: "Scaffolder", country: "Croatia", employer: "Adriatic Build", salary: 1100, cur: "EUR", quota: 8, created: today },
+    { id: rid(), ref: "JOB-" + new Date().getFullYear() + "-204", title: "CNC operator", country: "Serbia", employer: "Novi Sad Precision", salary: 950, cur: "EUR", quota: 6, created: today },
+  ]);
+  const a = gs("agency", null) || {};
+  a.name = a.name || "VisaHOBe"; a.cur = a.cur || "BDT"; a.officer = a.officer || "Office"; a.phone = a.phone || "01339-303961"; a.address = a.address || "Baridhara, Dhaka";
+  a.seq = a.seq || { case: 1006, job: 204 }; a.seeded = true;
+  ss("agency", a);
+  LS.set(scopeKey("casesSeeded"), true);
+}
+function ensureAgency() { seedAgency(false); }
+
+/* ---------- Cases (CRM) ---------- */
+var CASE_FILTER = { stage: "all", q: "" };
+function caseView() {
+  ensureAgency();
+  const all = caseList();
+  const q = (CASE_FILTER.q || "").toLowerCase();
+  const rows = all.filter((c) => (CASE_FILTER.stage === "all" || c.stage === CASE_FILTER.stage) &&
+    (!q || (c.applicant + " " + c.country + " " + c.job + " " + c.ref).toLowerCase().includes(q)));
+  const count = (k) => all.filter((c) => c.stage === k).length;
+  const t = (k) => (isBn() ? CASES.st(k).bn : CASES.st(k).en);
+  return wrap(`
+    ${pageHead(bt("Cases"), isBn() ? "আবেদনকারী থেকে ভিসা পর্যন্ত প্রতিটি কেস এক জায়গায়।" : "Every applicant, from intake to visa in hand, in one pipeline.",
+      `<button class="chip" onclick="newCase()">${ic("plus", 13)} ${bt("New case")}</button><button class="chip" onclick="caseCsv()">${bt("Export CSV")}</button>`)}
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:14px">
+      <div class="card" style="padding:12px"><div class="cap">${bt("Total cases")}</div><div class="num" style="font-size:26px;font-weight:650;letter-spacing:-1px;margin-top:2px">${bnDigits(all.length)}</div></div>
+      <div class="card" style="padding:12px"><div class="cap">${bt("Open cases")}</div><div class="num" style="font-size:26px;font-weight:650;letter-spacing:-1px;margin-top:2px">${bnDigits(all.filter((c) => !["approved", "departed"].includes(c.stage)).length)}</div></div>
+      <div class="card" style="padding:12px"><div class="cap">${bt("Approved this month")}</div><div class="num" style="font-size:26px;font-weight:650;letter-spacing:-1px;margin-top:2px">${bnDigits(all.filter((c) => c.stage === "approved" && new Date(c.updated || c.created).getMonth() === new Date().getMonth()).length)}</div></div>
+      <div class="card" style="padding:12px"><div class="cap">${bt("Fees collected")}</div><div class="num" style="font-size:22px;font-weight:650;letter-spacing:-.5px;margin-top:4px">${money(all.reduce((s, c) => s + (Number(c.feePaid) || 0), 0))}</div></div>
+    </div>
+    <div class="toolstrip" style="margin-bottom:10px">
+      <button class="chip" onclick="CASE_FILTER.stage='all';render()" style="${CASE_FILTER.stage === "all" ? "border-color:var(--ink)" : ""}">${bt("All")} · ${bnDigits(all.length)}</button>
+      ${CASES.stages.map((s) => `<button class="chip" onclick="CASE_FILTER.stage='${s.k}';render()" style="${CASE_FILTER.stage === s.k ? "border-color:var(--ink)" : ""}">${isBn() ? s.bn : s.en} · ${bnDigits(count(s.k))}</button>`).join("")}
+      <input value="${esc(CASE_FILTER.q)}" oninput="CASE_FILTER.q=this.value;caseTableOnly()" placeholder="${isBn() ? "কেস খুঁজুন…" : "Search cases…"}" style="height:30px;border-radius:9px;border:1px solid var(--line);background:var(--card);padding:0 10px;font-size:12px;flex:1;min-width:140px;outline:none;color:var(--ink)" />
+    </div>
+    <div id="caseTable">${caseTableHTML(rows)}</div>
+      ${(() => {
+        const next = caseList().find((c) => ["submitted", "embassy"].includes(c.stage));
+        if (!next) return "";
+        const eta = new Date((next.updated || next.created) + (next.stage === "embassy" ? 7 : 21) * 86400000);
+        return `<div class="card" style="padding:14px;margin-top:12px;display:flex;gap:10px;align-items:flex-start">
+          <span style="width:30px;height:30px;border-radius:9px;background:#fff7ed;color:#c2410c;display:grid;place-items:center;flex:none">${ic("auto", 15)}</span>
+          <div style="flex:1"><div style="font-size:12.5px;font-weight:600">${isBn() ? "পরবর্তী ধাপ" : "Next step"}</div>
+          <div style="font-size:12px;color:var(--sub);margin-top:2px">${isBn()
+            ? `<b>${esc(next.ref)}</b> (${esc(next.applicant)}) — ${caseStageLabel(next.stage)} ধাপে। আনুমানিক সিদ্ধান্ত <b>${bnDigits(eta.toLocaleDateString())}</b>। ${esc(next.country)} দূতাবাসে ফলো-আপ করলে ভালো।`
+            : `<b>${esc(next.ref)}</b> (${esc(next.applicant)}) is at ${caseStageLabel(next.stage)}. Expected decision around <b>${eta.toLocaleDateString()}</b> — a follow-up with the ${esc(next.country)} embassy is worthwhile.`}</div></div>
+          <button class="chip" style="height:26px;font-size:11px" onclick="openCase('${next.id}')">${isBn() ? "খুলুন" : "Open"}</button>
+        </div>`;
+      })()}
+    ${all.length ? "" : `<div class="card" style="padding:26px;text-align:center;color:var(--sub);font-size:13px">${isBn() ? "এখনো কোনো কেস নেই। “নতুন কেস” চাপুন, অথবা নিচের বক্সে লিখুন: <b>Serbia-এর জন্য একজন ওয়েল্ডারের কেস বানাও</b>।" : "No cases yet. Create one, or type in the box below: <b>Create a case for a welder going to Serbia</b>."}</div>`}
+  `);
+}
+function caseTableHTML(rows) {
+  if (!rows.length) return `<div class="card" style="padding:22px;text-align:center;color:var(--faint);font-size:12.5px">${isBn() ? "এই ফিল্টারে কিছু নেই" : "Nothing in this filter"}</div>`;
+  return `<div class="card rowcard" style="padding:0;overflow:hidden">
+    <div style="display:grid;grid-template-columns:1.6fr 1fr .9fr .9fr .8fr;gap:10px;padding:9px 14px;border-bottom:1px solid var(--line-2);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint)">
+      <span>${bt("Applicants")}</span><span>${bt("Country")} · ${bt("Jobs")}</span><span>${bt("Stage")}</span><span>${bt("Fees collected")}</span><span>${bt("Owner")}</span>
+    </div>
+    ${rows.map((c) => `<button onclick="openCase('${c.id}')" style="display:grid;grid-template-columns:1.6fr 1fr .9fr .9fr .8fr;gap:10px;align-items:center;width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line-2);padding:11px 14px;cursor:pointer;color:var(--ink)">
+      <span style="display:flex;align-items:center;gap:8px;min-width:0"><span style="width:26px;height:26px;border-radius:50%;background:#f1efe9;color:#7a756c;display:grid;place-items:center;font-size:10.5px;font-weight:700;flex:none">${esc((c.applicant || "?").split(" ").map((x) => x[0]).slice(0, 2).join("").toUpperCase())}</span>
+        <span style="min-width:0"><span style="display:block;font-size:12.8px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(c.applicant)}</span><span style="display:block;font-size:10.5px;color:var(--faint)">${esc(c.ref)}</span></span></span>
+      <span style="font-size:12px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(c.country)} · ${esc(c.job)}</span>
+      <span><span class="chip" style="height:22px;font-size:10.5px;pointer-events:none;background:${c.stage === "approved" ? "#ecfdf3" : "var(--hover)"};color:${c.stage === "approved" ? "#15803d" : "var(--sub)"}">${esc(caseStageLabel(c.stage))}</span></span>
+      <span style="font-size:12px;color:var(--sub)">${money((Number(c.feePaid) || 0))}${(Number(c.feeDue) || 0) ? `<span style="display:block;font-size:10px;color:#b45309">−${money(Number(c.feeDue))}</span>` : ""}</span>
+      <span style="font-size:12px;color:var(--faint)">${esc(c.owner || "—")}</span>
+    </button>`).join("")}
+  </div>`;
+}
+function caseTableOnly() {
+  const el = $("#caseTable"); if (!el) return;
+  const q = (CASE_FILTER.q || "").toLowerCase();
+  const rows = caseList().filter((c) => (CASE_FILTER.stage === "all" || c.stage === CASE_FILTER.stage) && (!q || (c.applicant + " " + c.country + " " + c.job + " " + c.ref).toLowerCase().includes(q)));
+  el.innerHTML = caseTableHTML(rows);
+  try { trTree(el); } catch (e) {}
+}
+function newCase(pre) {
+  pre = pre || {};
+  const apps = applicantList();
+  openSheet(`<div style="font-size:15px;font-weight:650;margin-bottom:2px">${bt("New case")}</div>
+    <div style="font-size:11.5px;color:var(--faint);margin-bottom:12px">${isBn() ? "আবেদনকারী, দেশ, চাকরি ও ফি যোগ করুন।" : "Name, destination, job and fee."}</div>
+    <label class="lbl">${bt("Name")}</label><input id="ncName" class="fin" value="${esc(pre.name || "")}" placeholder="${isBn() ? "যেমন: মোঃ রাকিব হাসান" : "e.g. Md Rakib Hasan"}" />
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div><label class="lbl">${bt("Country")}</label><input id="ncCountry" class="fin" value="${esc(pre.country || "Serbia")}" list="ctryList" /></div>
+      <div><label class="lbl">${bt("Jobs")}</label><input id="ncJob" class="fin" value="${esc(pre.job || "")}" placeholder="${isBn() ? "ওয়েল্ডার" : "Welder"}" /></div>
+    </div>
+    <datalist id="ctryList">${["Serbia", "Romania", "Croatia", "Poland", "UAE", "Qatar", "Malaysia", "Japan", "South Korea", "UK", "Italy", "Portugal"].map((c) => `<option value="${c}">`).join("")}</datalist>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div><label class="lbl">${bt("Fees collected")} (${money(0, (gs("agency", null) || {}).cur || "BDT")})</label><input id="ncFee" class="fin" type="number" value="${esc(pre.fee || 0)}" /></div>
+      <div><label class="lbl">${bt("Owner")}</label><input id="ncOwner" class="fin" value="${esc(pre.owner || (S.user ? S.user.name : ""))}" /></div>
+    </div>
+    <label class="lbl">${isBn() ? "নোট" : "Notes"}</label><textarea id="ncNotes" class="fin" rows="2" placeholder="${isBn() ? "পাসপোর্ট নম্বর, ইমেইল, পরিবারের তথ্য…" : "Passport no, email, family…"}">${esc(pre.notes || "")}</textarea>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button class="chip" onclick="closeSheets()">${bt("Cancel")}</button><button class="chip" style="background:#111;color:#fff;border-color:#111" onclick="createCase()">${bt("Save")}</button></div>`);
+}
+function createCase() {
+  const v = (id) => ($("#" + id)?.value || "").trim();
+  const name = v("ncName"); if (!name) return toast(isBn() ? "নাম লিখুন" : "Add a name");
+  const c = { id: rid(), ref: bumpSeq("case"), applicant: name, country: v("ncCountry") || "Serbia", job: v("ncJob") || "—",
+    feePaid: Number(v("ncFee")) || 0, owner: v("ncOwner"), notes: v("ncNotes"), stage: "new", created: Date.now(), updated: Date.now(), history: [{ stage: "new", at: Date.now(), by: "You" }], docs: [] };
+  const list = caseList(); list.unshift(c); saveCaseList(list);
+  const a = applicantList(); if (!a.find((x) => x.name.toLowerCase() === name.toLowerCase())) { a.unshift({ id: rid(), name, country: c.country, job: c.job, phone: "", email: "", created: Date.now() }); saveApplicants(a); }
+  closeSheets(); render();
+  toast(isBn() ? "কেস তৈরি হয়েছে · " + bnDigits(c.ref) : "Case created · " + c.ref);
+}
+function openCase(id) {
+  const c = caseList().find((x) => x.id === id); if (!c) return;
+  const hist = (c.history || []).slice().reverse();
+  openSheet(`<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">
+      <div style="flex:1"><div style="font-size:16px;font-weight:650;letter-spacing:-.3px">${esc(c.applicant)}</div>
+        <div style="font-size:11.5px;color:var(--faint)">${esc(c.ref)} · ${esc(c.country)} · ${esc(c.job)}</div></div>
+      <button class="iconbtn" onclick="closeSheets()">${ic("x", 16)}</button></div>
+    <div class="toolstrip" style="margin-bottom:12px">${CASES.stages.map((s) => `<button class="chip" onclick="setCaseStage('${c.id}','${s.k}')" style="${c.stage === s.k ? "background:#111;color:#fff;border-color:#111" : ""};height:26px;font-size:11px">${isBn() ? s.bn : s.en}</button>`).join("")}</div>
+    <div class="card" style="padding:12px;margin-bottom:10px">
+      <div class="kv"><span>${bt("Fees collected")}</span><b>${money(Number(c.feePaid) || 0)}</b></div>
+      <div class="kv"><span>${isBn() ? "বাকি ফি" : "Fee due"}</span><b style="color:${(Number(c.feeDue) || 0) ? "#b45309" : "inherit"}">${money(Number(c.feeDue) || 0)}</b></div>
+      <div class="kv"><span>${bt("Owner")}</span><b>${esc(c.owner || "—")}</b></div>
+      <div class="kv"><span>${isBn() ? "তৈরি" : "Created"}</span><b>${new Date(c.created).toLocaleDateString()}</b></div>
+      ${c.notes ? `<div style="font-size:12px;color:var(--sub);margin-top:8px;white-space:pre-wrap">${esc(c.notes)}</div>` : ""}
+    </div>
+    <label class="lbl">${isBn() ? "ধাপের ইতিহাস" : "Stage history"}</label>
+    <div class="card" style="padding:8px 12px;margin-bottom:10px">${hist.map((h) => `<div class="kv"><span>${esc(caseStageLabel(h.stage))}</span><span style="font-size:11px;color:var(--faint)">${new Date(h.at).toLocaleString()}</span></div>`).join("")}</div>
+    <label class="lbl">${bt("Documents")}</label>
+    <div class="card" style="padding:6px 12px;margin-bottom:10px">${DOC_FLOW.map((k) => {
+      const have = docList().find((d) => d.caseId === c.id && d.type === k);
+      return `<div class="kv"><span>${esc(docTypeLabel(k))}</span>${have
+        ? `<span style="display:flex;align-items:center;gap:6px"><input type="date" value="${esc(have.expiry || "")}" onchange="setDocExpiry('${have.id}',this.value)" style="height:24px;border:1px solid var(--line);border-radius:7px;background:var(--card);color:var(--ink);font-size:10.5px" /><button class="iconbtn" style="width:22px;height:22px" onclick="removeDoc2('${have.id}','${c.id}')">${ic("x", 12)}</button></span>`
+        : `<button class="chip" style="height:22px;font-size:10.5px" onclick="addCaseDoc('${c.id}','${k}')">${ic("plus", 11)} ${isBn() ? "যোগ" : "add"}</button>`}</div>`;
+    }).join("")}</div>
+    <div style="display:flex;gap:8px;justify-content:space-between;margin-top:6px">
+      <button class="chip" style="color:#b91c1c;border-color:#fecaca" onclick="deleteCase('${c.id}')">${bt("Delete")}</button>
+      <button class="chip" style="background:#111;color:#fff;border-color:#111" onclick="askForDocs('${c.id}')">${isBn() ? "কাগজ চাই" : "Request documents"}</button>
+    </div>`);
+}
+function setCaseStage(id, stage) {
+  const list = caseList(); const c = list.find((x) => x.id === id); if (!c) return;
+  c.stage = stage; c.updated = Date.now(); c.history = (c.history || []).concat([{ stage, at: Date.now(), by: "You" }]);
+  saveCaseList(list); closeSheets(); render(); toast((isBn() ? "ধাপ বদলেছে · " : "Moved to ") + caseStageLabel(stage));
+}
+function deleteCase(id) {
+  if (!confirm(isBn() ? "এই কেস মুছে ফেলবেন?" : "Delete this case?")) return;
+  saveCaseList(caseList().filter((c) => c.id !== id)); closeSheets(); render();
+}
+function caseCsv() {
+  const rows = [["ref", "applicant", "country", "job", "stage", "feePaid", "owner", "created"].join(",")]
+    .concat(caseList().map((c) => [c.ref, c.applicant, c.country, c.job, c.stage, c.feePaid, c.owner, new Date(c.created).toISOString()].map((x) => `"${String(x || "").replace(/"/g, '""')}"`).join(",")));
+  downloadText("n-studio-cases.csv", rows.join("\n"), "text/csv");
+  toast(isBn() ? "CSV ডাউনলোড হয়েছে" : "CSV downloaded");
+}
+function downloadText(name, text, type) {
+  const blob = new Blob([text], { type: (type || "text/plain") + ";charset=utf-8" });
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 800);
+}
+
+/* ---------- Applicants ---------- */
+function applicantView() {
+  ensureAgency();
+  const list = applicantList();
+  return wrap(`
+    ${pageHead(bt("Applicants"), isBn() ? "প্রতিটি আবেদনকারীর প্রোফাইল, যোগাযোগ ও কেস।" : "Every applicant's profile, contact and cases.",
+      `<button class="chip" onclick="newApplicant()">${ic("plus", 13)} ${bt("New applicant")}</button>`)}
+    ${list.length ? `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px">
+      ${list.map((a) => {
+        const cs = caseList().filter((c) => c.applicant.toLowerCase() === a.name.toLowerCase());
+        return `<button class="card" onclick="openApplicant('${a.id}')" style="text-align:left;padding:14px;border-radius:16px;cursor:pointer;background:var(--card)">
+          <div style="display:flex;align-items:center;gap:9px;margin-bottom:8px">
+            <span style="width:32px;height:32px;border-radius:50%;background:#111;color:#fff;display:grid;place-items:center;font-size:11.5px;font-weight:700">${esc(a.name.split(" ").map((x) => x[0]).slice(0, 2).join("").toUpperCase())}</span>
+            <span style="min-width:0"><span style="display:block;font-size:13.5px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(a.name)}</span><span style="display:block;font-size:11px;color:var(--faint)">${esc(a.country || "—")} · ${esc(a.job || "—")}</span></span>
+          </div>
+          <div style="font-size:11.5px;color:var(--sub);display:flex;gap:10px;flex-wrap:wrap">${a.phone ? `<span>${ic("user", 11)} ${esc(a.phone)}</span>` : ""}${a.email ? `<span>${esc(a.email)}</span>` : ""}</div>
+          <div style="margin-top:9px;display:flex;gap:5px;flex-wrap:wrap">${cs.length ? cs.map((c) => `<span class="chip" style="height:21px;font-size:10px;pointer-events:none">${esc(caseStageLabel(c.stage))}</span>`).join("") : `<span class="chip" style="height:21px;font-size:10px;pointer-events:none;color:var(--faint)">${isBn() ? "কেস নেই" : "no case"}</span>`}</div>
+        </button>`;
+      }).join("")}
+    </div>` : `<div class="card" style="padding:26px;text-align:center;color:var(--sub);font-size:13px">${isBn() ? "আবেদনকারী যোগ করুন — তখন কেস, কাগজ ও অটোমেশন সব একসাথে কাজ করবে।" : "Add your first applicant — cases, documents and follow-ups then hang off them."}</div>`}
+  `);
+}
+function newApplicant() {
+  openSheet(`<div style="font-size:15px;font-weight:650;margin-bottom:10px">${bt("New applicant")}</div>
+    <label class="lbl">${bt("Name")}</label><input id="naName" class="fin" />
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div><label class="lbl">${bt("Country")}</label><input id="naCountry" class="fin" value="Serbia" /></div>
+      <div><label class="lbl">${isBn() ? "পেশা" : "Trade"}</label><input id="naJob" class="fin" /></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div><label class="lbl">${isBn() ? "ফোন" : "Phone"}</label><input id="naPhone" class="fin" placeholder="01XXXXXXXXX" /></div>
+      <div><label class="lbl">${bt("Email")}</label><input id="naEmail" class="fin" /></div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button class="chip" onclick="closeSheets()">${bt("Cancel")}</button><button class="chip" style="background:#111;color:#fff;border-color:#111" onclick="createApplicant()">${bt("Save")}</button></div>`);
+}
+function createApplicant() {
+  const v = (id) => ($("#" + id)?.value || "").trim();
+  if (!v("naName")) return toast(isBn() ? "নাম লিখুন" : "Add a name");
+  const a = applicantList(); a.unshift({ id: rid(), name: v("naName"), country: v("naCountry"), job: v("naJob"), phone: v("naPhone"), email: v("naEmail"), created: Date.now() });
+  saveApplicants(a); closeSheets(); render();
+  toast(isBn() ? "আবেদনকারী যোগ হয়েছে" : "Applicant added");
+}
+function openApplicant(id) {
+  const a = applicantList().find((x) => x.id === id); if (!a) return;
+  const cs = caseList().filter((c) => c.applicant.toLowerCase() === a.name.toLowerCase());
+  openSheet(`<div style="font-size:16px;font-weight:650;margin-bottom:2px">${esc(a.name)}</div>
+    <div style="font-size:11.5px;color:var(--faint);margin-bottom:12px">${esc(a.country || "—")} · ${esc(a.job || "—")} ${a.phone ? "· " + esc(a.phone) : ""} ${a.email ? "· " + esc(a.email) : ""}</div>
+    <label class="lbl">${bt("Cases")}</label>
+    <div class="card" style="padding:8px 12px;margin-bottom:12px">${cs.length ? cs.map((c) => `<button onclick="closeSheets();openCase('${c.id}')" class="kv" style="width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line-2);padding:9px 0;cursor:pointer;color:var(--ink)"><span>${esc(c.ref)} · ${esc(c.country)}</span><span class="chip" style="height:20px;font-size:10px;pointer-events:none">${esc(caseStageLabel(c.stage))}</span></button>`).join("") : `<div style="font-size:12px;color:var(--faint);padding:6px 0">${isBn() ? "কোনো কেস নেই" : "No cases yet"}</div>`}</div>
+    <div style="display:flex;gap:8px;justify-content:flex-end"><button class="chip" onclick="closeSheets()">${bt("Close")}</button><button class="chip" style="background:#111;color:#fff;border-color:#111" onclick="closeSheets();newCase({name:'${esc(a.name)}',country:'${esc(a.country)}',job:'${esc(a.job)}'})">${bt("New case")}</button></div>`);
+}
+
+/* ---------- Documents vault ---------- */
+var DOC_TYPES = [
+  { k: "passport", en: "Passport", bn: "পাসপোর্ট" },
+  { k: "photo", en: "Photos", bn: "ছবি" },
+  { k: "cv", en: "CV", bn: "সিভি" },
+  { k: "exp", en: "Experience letter", bn: "অভিজ্ঞতার সার্টিফিকেট" },
+  { k: "edu", en: "Certificate", bn: "শিক্ষাগত সার্টিফিকেট" },
+  { k: "med", en: "Medical certificate", bn: "মেডিকেল সার্টিফিকেট" },
+  { k: "police", en: "Police clearance", bn: "পুলিশ ক্লিয়ারেন্স" },
+  { k: "bank", en: "Bank statement", bn: "ব্যাংক স্টেটমেন্ট" },
+];
+function docTypeLabel(k) { const d = DOC_TYPES.find((x) => x.k === k); return d ? (isBn() ? d.bn : d.en) : k; }
+function docName(d) { return (d && d.name) || docTypeLabel(d && d.type); }
+function addCaseDoc(caseId, type) {
+  const c = caseList().find((x) => x.id === caseId); if (!c) return;
+  const d = { id: rid(), caseId, ref: c.ref, applicant: c.applicant, type, name: docTypeLabel(type), expiry: "", added: Date.now(), by: "You" };
+  const docs = docList(); docs.unshift(d); saveDocs(docs);
+  toast(isBn() ? "কাগজ যোগ হয়েছে" : "Document added");
+  openCase(caseId);
+  render();
+}
+function docsView() {
+  ensureAgency();
+  const docs = docList();
+  const expiring = docs.filter((d) => { const n = daysTo(d.expiry); return n !== null && n <= 90; });
+  const missing = (() => {
+    let n = 0;
+    caseList().forEach((c) => { n += DOC_TYPES.filter((t) => !docs.find((d) => d.caseId === c.id && d.type === t.k)).length; });
+    return n;
+  })();
+  return wrap(`
+    ${pageHead(bt("Documents"), isBn() ? "প্রতিটি কেসের কাগজ, মেয়াদ ও ঘাটতি এক জায়গায়।" : "Every case's documents, expiry dates and gaps in one vault.",
+      `${expiring.length ? `<button class="chip" onclick="startRun('<bunker>expiry sweep</bunker>')">${ic("auto", 13)} ${isBn() ? "মেয়াদ যাচাই" : "Run expiry sweep"}</button>` : ""}`)}
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:14px">
+      <div class="card" style="padding:12px"><div class="cap">${isBn() ? "মোট কাগজ" : "Files"}</div><div class="num" style="font-size:24px;font-weight:650;margin-top:2px">${bnDigits(docs.length)}</div></div>
+      <div class="card" style="padding:12px"><div class="cap">${isBn() ? "৯০ দিনে মেয়াদ শেষ" : "Expiring in 90 days"}</div><div class="num" style="font-size:24px;font-weight:650;margin-top:2px;color:${expiring.length ? "#b45309" : "inherit"}">${bnDigits(expiring.length)}</div></div>
+      <div class="card" style="padding:12px"><div class="cap">${bt("Missing")}</div><div class="num" style="font-size:24px;font-weight:650;margin-top:2px">${bnDigits(missing)}</div></div>
+    </div>
+    ${docs.length ? `<div class="card rowcard" style="padding:0;overflow:hidden">${docs.map((d) => {
+      const n = daysTo(d.expiry);
+      const tag = n === null ? "" : n < 0 ? `<span class="chip" style="height:20px;font-size:10px;color:#b91c1c;border-color:#fecaca;pointer-events:none">${bt("Expired")}</span>`
+        : n <= 90 ? `<span class="chip" style="height:20px;font-size:10px;color:#b45309;border-color:#fde68a;pointer-events:none">${bnDigits(n)} ${bt("Days left")}</span>` : "";
+
+      return `<div style="display:flex;align-items:center;gap:10px;padding:11px 14px;border-top:1px solid var(--line-2)">
+        <span style="width:28px;height:28px;border-radius:8px;background:var(--hover);display:grid;place-items:center;flex:none">${ic("doc", 14)}</span>
+        <span style="flex:1;min-width:0"><span style="display:block;font-size:12.8px;font-weight:600">${esc(docName(d))}</span><span style="display:block;font-size:10.5px;color:var(--faint)">${esc(d.applicant)} · ${esc(d.ref)}</span></span>
+        ${tag}
+        <input type="date" value="${esc(d.expiry || "")}" onchange="setDocExpiry('${d.id}', this.value)" style="height:28px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font-size:11px;padding:0 6px" title="${isBn() ? "মেয়াদ" : "Expiry"}" />
+        <button class="iconbtn" style="width:26px;height:26px" onclick="removeDoc('${d.id}')">${ic("x", 13)}</button>
+      </div>`;
+    }).join("")}</div>` : `<div class="card" style="padding:26px;text-align:center;color:var(--sub);font-size:13px">${isBn() ? "এখনো কাগজ নেই। কেস খুলে “+” দিয়ে কাগজ যোগ করুন।" : "No documents yet. Open a case and use the + buttons to add documents."}</div>`}
+  `);
+}
+function setDocExpiry(id, v) { const d = docList(); const x = d.find((y) => y.id === id); if (x) { x.expiry = v; saveDocs(d); render(); } }
+function removeDoc(id) { saveDocs(docList().filter((d) => d.id !== id)); render(); }
+function removeDoc2(id, caseId) { removeDoc(id); openCase(caseId); }
+function askForDocs(caseId) {
+  const c = caseList().find((x) => x.id === caseId); if (!c) return;
+  const have = docList().filter((d) => d.caseId === caseId).map((d) => d.type);
+  const missing = DOC_TYPES.filter((t) => !have.includes(t.k)).map((t) => (isBn() ? t.bn : t.en));
+  const text = isBn()
+    ? `প্রিয় ${c.applicant}, আপনার ${c.country} কেস (${c.ref}) এর জন্য নিচের কাগজগুলো প্রয়োজন: ${missing.join(", ") || "কোনো কাগজ বাকি নেই"}. অনুগ্রহ করে ছবি তুলে পাঠান।`
+    : `Dear ${c.applicant}, for your ${c.country} case (${c.ref}) we still need: ${missing.join(", ") || "nothing — you are complete"}. Please send clear photos.`;
+  downloadText(`doc-request-${c.ref}.txt`, text);
+  toast(isBn() ? "অনুরোধ তৈরি হয়েছে — ডাউনলোড হয়েছে" : "Document request generated");
+}
+
+/* ---------- Jobs ---------- */
+function jobsView() {
+  ensureAgency();
+  const jobs = jobList();
+  return wrap(`
+    ${pageHead(bt("Jobs"), isBn() ? "নিয়োগকর্তা, বেতন, কোটা ও পূরণ হওয়া আসন।" : "Employer, salary, quota and seats filled.",
+      `<button class="chip" onclick="newJob()">${ic("plus", 13)} ${bt("New job")}</button>`)}
+    ${jobs.length ? `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px">${jobs.map((j) => {
+      const filled = caseList().filter((c) => (c.job || "").toLowerCase() === (j.title || "").toLowerCase() && c.country === j.country).length;
+      const pct = j.quota ? Math.min(100, Math.round(filled / j.quota * 100)) : 0;
+      return `<div class="card" style="padding:14px;border-radius:16px">
+        <div style="display:flex;justify-content:space-between;gap:8px"><div><div style="font-size:13.5px;font-weight:650">${esc(j.title)}</div><div style="font-size:11px;color:var(--faint)">${esc(j.country)} · ${esc(j.employer || "—")}</div></div><span class="chip" style="height:22px;font-size:10.5px;pointer-events:none">${money(j.salary, j.cur || "EUR")}</span></div>
+        <div style="margin-top:10px;height:6px;border-radius:999px;background:var(--hover);overflow:hidden"><div style="width:${pct}%;height:100%;background:#111"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--faint);margin-top:5px"><span>${bnDigits(filled)} / ${bnDigits(j.quota || 0)} ${isBn() ? "আসন পূরণ" : "filled"}</span><span>${bnDigits(pct)}%</span></div>
+        <div style="display:flex;gap:6px;margin-top:10px"><button class="chip" style="height:26px;font-size:11px" onclick="newCase({job:'${esc(j.title)}',country:'${esc(j.country)}'})">${bt("New case")}</button><button class="chip" style="height:26px;font-size:11px;color:#b91c1c" onclick="deleteJob('${j.id}')">${bt("Delete")}</button></div>
+      </div>`;
+    }).join("")}</div>` : `<div class="card" style="padding:26px;text-align:center;color:var(--sub);font-size:13px">${isBn() ? "চাকরির পোস্ট যোগ করুন — কোটা আর বেতন লিখে রাখলে কেস মিলিয়ে দেওয়া সহজ হয়।" : "Add a vacancy with employer, salary and quota — cases then match against it."}</div>`}
+  `);
+}
+function newJob() {
+  openSheet(`<div style="font-size:15px;font-weight:650;margin-bottom:10px">${bt("New job")}</div>
+    <label class="lbl">${isBn() ? "পদবি" : "Job title"}</label><input id="njTitle" class="fin" placeholder="${isBn() ? "ওয়েল্ডার" : "Welder"}" />
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div><label class="lbl">${bt("Country")}</label><input id="njCountry" class="fin" value="Serbia" /></div>
+      <div><label class="lbl">${isBn() ? "নিয়োগকর্তা" : "Employer"}</label><input id="njEmployer" class="fin" /></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div><label class="lbl">${isBn() ? "মাসিক বেতন" : "Monthly salary"}</label><input id="njSalary" class="fin" type="number" value="900" /></div>
+      <div><label class="lbl">${isBn() ? "মুদ্রা" : "Currency"}</label><select id="njCur" class="fin"><option>EUR</option><option>BDT</option><option>GBP</option><option>USD</option></select></div>
+      <div><label class="lbl">${isBn() ? "কোটা" : "Quota"}</label><input id="njQuota" class="fin" type="number" value="10" /></div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button class="chip" onclick="closeSheets()">${bt("Cancel")}</button><button class="chip" style="background:#111;color:#fff;border-color:#111" onclick="createJob()">${bt("Save")}</button></div>`);
+}
+function createJob() {
+  const v = (id) => ($("#" + id)?.value || "").trim();
+  if (!v("njTitle")) return toast(isBn() ? "পদবি লিখুন" : "Add a job title");
+  const j = jobList(); j.unshift({ id: rid(), ref: bumpSeq("job"), title: v("njTitle"), country: v("njCountry"), employer: v("njEmployer"), salary: Number(v("njSalary")) || 0, cur: $("#njCur").value, quota: Number(v("njQuota")) || 0, created: Date.now() });
+  saveJobs(j); closeSheets(); render(); toast(isBn() ? "চাকরি যোগ হয়েছে" : "Job added");
+}
+function deleteJob(id) { saveJobs(jobList().filter((j) => j.id !== id)); render(); }
+
+/* ---------- Reports ---------- */
+function reportView() {
+  ensureAgency();
+  const all = caseList();
+  const m0 = new Date(); m0.setDate(1); m0.setHours(0, 0, 0, 0);
+  const thisMonth = all.filter((c) => new Date(c.created) >= m0);
+  const approved = all.filter((c) => c.stage === "approved" || c.stage === "departed");
+  const success = all.length ? Math.round(approved.length / all.length * 100) : 0;
+  const byCountry = {};
+  all.forEach((c) => { byCountry[c.country] = (byCountry[c.country] || 0) + 1; });
+  const byStage = CASES.stages.map((s) => ({ k: s.k, label: isBn() ? s.bn : s.en, n: all.filter((c) => c.stage === s.k).length }));
+  const maxC = Math.max(1, ...Object.values(byCountry));
+  const maxS = Math.max(1, ...byStage.map((s) => s.n));
+  return wrap(`
+    ${pageHead(bt("Reports"), isBn() ? "এই মাসের কেস, আদায়কৃত ফি ও সফলতার হার।" : "This month's cases, fees collected and success rate.",
+      `<button class="chip" onclick="caseCsv()">${bt("Export CSV")}</button>`)}
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:16px">
+      <div class="card" style="padding:12px"><div class="cap">${bt("This month")}</div><div class="num" style="font-size:26px;font-weight:650;margin-top:2px">${bnDigits(thisMonth.length)}</div></div>
+      <div class="card" style="padding:12px"><div class="cap">${bt("Approved this month")}</div><div class="num" style="font-size:26px;font-weight:650;margin-top:2px">${bnDigits(thisMonth.filter((c) => c.stage === "approved").length)}</div></div>
+      <div class="card" style="padding:12px"><div class="cap">${bt("Fees collected")}</div><div class="num" style="font-size:20px;font-weight:650;margin-top:5px">${money(all.reduce((s, c) => s + (Number(c.feePaid) || 0), 0))}</div></div>
+      <div class="card" style="padding:12px"><div class="cap">${bt("Success rate")}</div><div class="num" style="font-size:26px;font-weight:650;margin-top:2px">${bnDigits(success)}%</div></div>
+      <div class="card" style="padding:12px"><div class="cap">${isBn() ? "বাকি ফি" : "Fees due"}</div><div class="num" style="font-size:20px;font-weight:650;margin-top:5px;color:#b45309">${money(all.reduce((s, c) => s + (Number(c.feeDue) || 0), 0))}</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px">
+      <div class="card" style="padding:14px"><div class="cap" style="margin-bottom:10px">${bt("By country")}</div>
+        ${Object.keys(byCountry).length ? Object.entries(byCountry).sort((a, b) => b[1] - a[1]).map(([c, n]) => `<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:12px"><span>${esc(c)}</span><b>${bnDigits(n)}</b></div><div style="height:5px;border-radius:999px;background:var(--hover);margin-top:4px"><div style="width:${Math.round(n / maxC * 100)}%;height:100%;background:#111;border-radius:999px"></div></div></div>`).join("") : `<div style="font-size:12px;color:var(--faint)">${isBn() ? "কেস যোগ করুন" : "No cases yet"}</div>`}
+      </div>
+      <div class="card" style="padding:14px"><div class="cap" style="margin-bottom:10px">${bt("By stage")}</div>
+        ${byStage.map((s) => `<div style="margin-bottom:8px"><div style="display:flex;justify-content:space-between;font-size:12px"><span>${esc(s.label)}</span><b>${bnDigits(s.n)}</b></div><div style="height:5px;border-radius:999px;background:var(--hover);margin-top:4px"><div style="width:${Math.round(s.n / maxS * 100)}%;height:100%;background:#f97316;border-radius:999px"></div></div></div>`).join("")}
+      </div>
+    </div>`);
+}
+
+/* ---------- Workspace settings ---------- */
+function settingsView() {
+  const a = gs("agency", null) || { name: "", cur: "BDT", officer: "", phone: "", address: "" };
+  const l = lang();
+  return wrap(`
+    ${pageHead(isBn() ? "ওয়ার্কস্পেস সেটিংস" : "Workspace settings", isBn() ? "এজেন্সির নাম, মুদ্রা, ভাষা ও নোটিফিকেশন।" : "Agency name, currency, language and notifications.")}
+    <div class="card" style="padding:14px;margin-bottom:10px">
+      <div class="cap" style="margin-bottom:8px">${bt("Agency")}</div>
+      <label class="lbl">${isBn() ? "এজেন্সির নাম" : "Agency name"}</label><input id="stName" class="fin" value="${esc(a.name || (S.user ? S.user.name : ""))}" placeholder="VisaHOBe" />
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div><label class="lbl">${isBn() ? "মুদ্রা" : "Currency"}</label><select id="stCur" class="fin">${["BDT", "EUR", "GBP", "USD"].map((c) => `<option ${a.cur === c ? "selected" : ""}>${c}</option>`).join("")}</select></div>
+        <div><label class="lbl">${isBn() ? "দায়িত্বপ্রাপ্ত কর্মকর্তা" : "Case officer"}</label><input id="stOfficer" class="fin" value="${esc(a.officer || "")}" /></div>
+      </div>
+      <label class="lbl">${isBn() ? "ফোন" : "Phone"}</label><input id="stPhone" class="fin" value="${esc(a.phone || "")}" placeholder="01339-303961" />
+      <label class="lbl">${isBn() ? "ঠিকানা" : "Address"}</label><input id="stAddress" class="fin" value="${esc(a.address || "")}" placeholder="${isBn() ? "বাড়ি, রোড, শহর" : "House, road, city"}" />
+    </div>
+    <div class="card" style="padding:14px;margin-bottom:10px">
+      <div class="cap" style="margin-bottom:8px">${bt("Language")}</div>
+      <div class="toolstrip" style="margin:0"><button class="chip" onclick="setLang('bn')" style="${l === "bn" ? "background:#111;color:#fff;border-color:#111" : ""}">বাংলা (native)</button>
+        <button class="chip" onclick="setLang('en')" style="${l === "en" ? "background:#111;color:#fff;border-color:#111" : ""}">English</button></div>
+      <div style="font-size:11.5px;color:var(--faint);margin-top:8px">${isBn() ? "ভাষা বদলালে পুরো ইন্টারফেস ও এজেন্টের উত্তর বাংলায় যাবে।" : "Switching language translates the whole interface and the agent's replies."}</div>
+    </div>
+    <div class="card" style="padding:14px;margin-bottom:10px">
+      <div class="cap" style="margin-bottom:8px">${bt("Notifications")}</div>
+      ${[["docExpiry", isBn() ? "কাগজের মেয়াদ শেষের আগে জানান" : "Warn before documents expire"], ["followup", isBn() ? "জমা দেওয়া কেসের ফলো-আপ" : "Follow up on submitted cases"], ["dailyBrief", isBn() ? "প্রতিদিন সকালে সারসংক্ষেপ" : "Daily morning brief"]].map(([k, label]) => {
+        const on = a[k] !== false;
+        return `<div class="kv"><span>${label}</span><button onclick="toggleAgencyFlag('${k}')" style="border:0;background:none;padding:0;cursor:pointer"><span style="display:block;width:36px;height:20px;border-radius:999px;background:${on ? "#111" : "var(--line)"};position:relative"><span style="position:absolute;top:2px;left:${on ? "18px" : "2px"};width:16px;height:16px;border-radius:50%;background:#fff"></span></span></button></div>`;
+      }).join("")}
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end"><button class="chip" style="background:#111;color:#fff;border-color:#111" onclick="saveAgency()">${bt("Save")}</button></div>`);
+}
+function saveAgency() {
+  const a = gs("agency", null) || {};
+  a.name = $("#stName").value; a.cur = $("#stCur").value; a.officer = $("#stOfficer").value; a.phone = $("#stPhone").value; a.address = $("#stAddress").value;
+  ss("agency", a); render(); toast(isBn() ? "সেটিংস সেভ হয়েছে" : "Settings saved");
+}
+function toggleAgencyFlag(k) { const a = gs("agency", null) || {}; a[k] = a[k] === false; ss("agency", a); render(); }
+function setLang(l) { LS.set("lang", l); renderLang(); render(); renderSidebar(); }
+
+/* ---------- Agency tools for the agent + Bangla replies ---------- */
+var AGENCY_TOOLS = [
+  "create_case(name, country, job, fee)",
+  "move_case(ref, stage)",
+  "add_document(ref, type)",
+  "set_document_expiry(ref, type, date)",
+  "create_job(title, country, employer, salary, quota)",
+  "report(range)",
+];
+function agencyIntent(q) {
+  const s = " " + String(q || "").toLowerCase() + " ";
+  let m;
+  if ((m = s.match(/কেস বানাও (.+?) (?:নামে|নামের)/))) return { kind: "case", name: m[1].trim(), country: "Serbia", job: "—" };
+  if ((m = s.match(/create (?:a )?case (?:for|of) (.+?)(?: (?:going|to) ([a-z ]+?))?(?: in ([a-z ]+?))?(?: for |$)/)) || (m = s.match(/add (?:a )?case (?:for )?(.+?)(?: to ([a-z ]+))?$/))) {
+    return { kind: "case", name: titleCase(m[1] || ""), country: titleCase(m[2] || m[3] || "Serbia"), job: "—" };
+  }
+  if (/কেস/.test(s) && /বানা|তৈরি|খুল|যোগ/.test(s)) return { kind: "case", name: isBn() ? "নতুন আবেদনকারী" : "New applicant", country: "Serbia", job: "—" };
+  if (/চাকরি/.test(s) && /যোগ|বানা|তৈরি/.test(s)) return { kind: "job", title: "Welder", country: "Serbia" };
+  if (/রিপোর্ট|সারসংক্ষেপ/.test(s)) return { kind: "report" };
+  if (/মেয়াদ/.test(s)) return { kind: "expiry" };
+  if (/আটকে/.test(s) && /কেস/.test(s)) return { kind: "stuck" };
+  if (/case/.test(s) && /create|new|make/.test(s)) return { kind: "case", name: isBn() ? "নতুন আবেদনকারী" : "New applicant", country: "Serbia", job: "—" };
+  if ((m = s.match(/(?:move|set) case (\S+) to ([a-z]+)/))) return { kind: "move", ref: m[1], stage: m[2] };
+  if ((m = s.match(/which cases (?:are )?stuck/))) return { kind: "stuck" };
+  if ((m = s.match(/(?:create|add) (?:a )?job (.+?)(?: in ([a-z ]+))?$/))) return { kind: "job", title: titleCase(m[1]), country: titleCase(m[2] || "Serbia") };
+  if (/report|summary|how many cases|fees collected/.test(s)) return { kind: "report" };
+  if (/expir|মেয়াদ/.test(s)) return { kind: "expiry" };
+  return null;
+}
+function titleCase(s) { return String(s || "").trim().replace(/\b[a-z]/g, (c) => c.toUpperCase()); }
+function runAgencyIntent(i) {
+  if (i.kind === "case") {
+    const c = { id: rid(), ref: bumpSeq("case"), applicant: i.name || "New applicant", country: i.country || "Serbia", job: i.job || "—", stage: "new", created: Date.now(), updated: Date.now(), history: [{ stage: "new", at: Date.now(), by: "Agent" }], feePaid: 0, owner: gs("agency", null)?.officer || "" };
+    const list = caseList(); list.unshift(c); saveCaseList(list);
+    const a = applicantList(); if (i.name && !a.find((x) => x.name.toLowerCase() === i.name.toLowerCase())) { a.unshift({ id: rid(), name: i.name, country: c.country, job: c.job, created: Date.now() }); saveApplicants(a); }
+    return { page: "cases", text: isBn() ? `কেস তৈরি হয়েছে: **${c.ref}** — ${c.applicant}, ${c.country}. কাগজপত্র সেকশন থেকে ডকুমেন্ট যোগ করুন।` : `Case created: **${c.ref}** — ${c.applicant}, ${c.country}. Add documents from the Documents section.` };
+  }
+  if (i.kind === "move") {
+    const c = caseList().find((x) => x.ref.toLowerCase() === String(i.ref).toLowerCase());
+    if (!c) return { text: isBn() ? "ওই রেফারেন্সের কোনো কেস পাইনি।" : "No case with that reference." };
+    c.stage = i.stage; c.updated = Date.now(); c.history = (c.history || []).concat([{ stage: i.stage, at: Date.now(), by: "Agent" }]); saveCaseList(caseList().map((x) => x.id === c.id ? c : x));
+    return { page: "cases", text: isBn() ? `**${c.ref}** এখন “${caseStageLabel(c.stage)}” ধাপে।` : `**${c.ref}** is now at “${caseStageLabel(c.stage)}”.` };
+  }
+  if (i.kind === "stuck") {
+    const list = caseList().filter((c) => ["submitted", "embassy"].includes(c.stage));
+    return { page: "cases", text: list.length ? (isBn() ? `এমব্যাসি/জমা ধাপে ${bnDigits(list.length)}টি কেস আছে: ${list.map((c) => c.ref).join(", ")}` : `${list.length} case(s) waiting at embassy or submitted: ${list.map((c) => c.ref).join(", ")}`) : (isBn() ? "কোনো কেস আটকে নেই।" : "Nothing is stuck.") };
+  }
+  if (i.kind === "job") {
+    const j = { id: rid(), ref: bumpSeq("job"), title: i.title, country: i.country, employer: "", salary: 0, cur: "EUR", quota: 10, created: Date.now() };
+    const list = jobList(); list.unshift(j); saveJobs(list);
+    return { page: "jobs", text: isBn() ? `চাকরি যোগ হয়েছে: **${j.title}** (${j.country}), কোটা ${bnDigits(j.quota)}।` : `Job added: **${j.title}** (${j.country}), quota ${j.quota}.` };
+  }
+  if (i.kind === "report") {
+    const all = caseList();
+    const fees = all.reduce((s, c) => s + (Number(c.feePaid) || 0), 0);
+    return { page: "reports", text: isBn() ? `মোট ${bnDigits(all.length)}টি কেস, আদায় ${money(fees)}। রিপোর্ট সেকশনে বিস্তারিত দেখুন।` : `${all.length} cases in total, ${money(fees)} collected. See Reports for the breakdown.` };
+  }
+  if (i.kind === "expiry") {
+    const soon = docList().filter((d) => { const n = daysTo(d.expiry); return n !== null && n <= 90; });
+    return { page: "documents", text: soon.length ? (isBn() ? `${bnDigits(soon.length)}টি কাগজের মেয়াদ ৯০ দিনের মধ্যে শেষ: ${soon.map((d) => docName(d) + " (" + d.applicant + ")").join(", ")}` : `${soon.length} document(s) expire within 90 days: ${soon.map((d) => docName(d) + " (" + d.applicant + ")").join(", ")}`) : (isBn() ? "৯০ দিনের মধ্যে কোনো কাগজের মেয়াদ শেষ হচ্ছে না।" : "No documents expire in the next 90 days.") };
+  }
+  return null;
+}
+
+/* ---------- Bangla drafts for the agent (no key) ---------- */
+var DRAFT_BN = {
+  translate: (q) => ({
+    heading: "আপনার কভার লেটারের বাংলা অনুবাদ",
+    intro: "এই কাজে লেটারটি এখনো যুক্ত করা হয়নি, তাই গঠন ও একটি প্রস্তুত প্যারা দিলাম — ফাইল যুক্ত করলে প্রতিটি লাইন অনুবাদ হয়ে যাবে।",
+    sections: [
+      { h: "প্রস্তুত প্যারা", items: ["আমি এই পদে আবেদন করতে আগ্রহী এবং আমার অভিজ্ঞতা ও দক্ষতা এই ভূমিকার জন্য উপযুক্ত বলে আমি বিশ্বাস করি।", "সম্মানিত নিয়োগকর্তা, আপনার মূল্যবান সময় দেওয়ার জন্য ধন্যবাদ।"] },
+      { h: "আমি যেভাবে অনুবাদ করি", items: ["নাম, তারিখ, নিয়োগকর্তা ও রেফারেন্স নম্বর ইংরেজিতেই থাকবে যাতে দূতাবাস মিলাতে পারে।", "মূল অংশ শুদ্ধ বাংলায়, শুধু অক্ষর বদল নয়।", "ছাপার আগে প্রিভিউতে পাশাপাশি দেখতে পাবেন।"] },
+    ],
+  }),
+  cv: () => ({ heading: "চাকরি অনুযায়ী সিভি", intro: "আবেদনের জন্য প্রস্তুত সিভির সেকশন-ক্রম নিচে। আপনার তথ্য দিলে প্রতিটি লাইন ভরে দেব।", sections: [{ h: "সেকশন", items: ["নাম ও যোগাযোগ — এক লাইনে", "প্রোফাইল — চাকরির শিরোনামের সাথে মিলিয়ে ৩ লাইন", "অভিজ্ঞতা — নতুন আগে, সংখ্যা ও ফলাফলসহ", "দক্ষতা ও ভাষা — ইংরেজি টেস্ট স্কোর থাকলে উল্লেখ", "রেফারেন্স বা যোগদানের সময়"] }] }),
+  docs: () => ({ heading: "কাগজপত্র যাচাইয়ের পরিকল্পনা", intro: "আপনার ফাইল আপনার ভিসা রুটের সাথে মিলিয়ে দেখব এবং যেখানে আটকাবে সেখানে আগেই জানাব।", sections: [{ h: "যা দেখব", items: ["পাসপোর্টের মেয়াদ — অবস্থানের চেয়ে ৬ মাস বেশি", "পাসপোর্ট, সার্টিফিকেট ও জব অফারে নামের বানান এক", "যোগ্যতা চাকরির কোডের সাথে মিলছে কি না", "চাকরির প্রমাণ — চুক্তি, অভিজ্ঞতার সার্টিফিকেট, বেতন স্লিপ", "ব্যাংক স্টেটমেন্টে প্রয়োজনীয় সময় ধরে টাকা"] }, { h: "শুরু", items: ["কম্পোজারের + দিয়ে কাগজ যুক্ত করুন।", "অথবা জব অ্যাডের লিংক দিন, আমি মিলিয়ে দেব।"] }] }),
+  email: () => ({ heading: "মেসেজের খসড়া", intro: "রিভিউ করার পর পাঠানোর মতো ছোট ভদ্র খসড়া। বন্ধনীর জায়গায় নিজের তথ্য বসান।", sections: [{ h: "খসড়া", items: ["বিষয়: আবেদন — [পদবি] ([রেফারেন্স])", "জনাব/জনাবা [নাম], আমি [পোর্টাল]-এ প্রকাশিত [পদবি] পদ সম্পর্কে লিখছি। আমার [বছর] বছরের অভিজ্ঞতা আছে এবং কাগজপত্র যাচাইয়ের জন্য প্রস্তুত।", "পাসপোর্ট, সার্টিফিকেট ও অভিজ্ঞতার কাগজ পাঠাতে পারি। সময় দেওয়ার জন্য ধন্যবাদ।", "শুভেচ্ছান্তে, [নাম] · [ফোন] · [ইমেইল]"] }] }),
+  plan: (q) => ({ heading: "কাজের পরিকল্পনা", intro: "আমি এটি শুরু থেকে শেষ করতে পারি। পরিকল্পনা: " + String(q || "").slice(0, 90), sections: [{ h: "পরিকল্পনা", items: ["গন্তব্য ও পদবি নিশ্চিত করা", "সরকারি পোর্টাল থেকে শর্ত ও ফি সংগ্রহ", "আপনার কাগজ মিলিয়ে ঘাটতি চিহ্নিত করা", "প্রিভিউতে প্রিন্ট-রেডি প্যাক তৈরি"] }] }),
+};
+function draftAnswerLocalized(q) {
+  const s = " " + String(q || "").toLowerCase() + " ";
+  if (!isBn()) return draftAnswer(q);
+  return draftAnswerBn(q);
+}
+function draftAnswerBn(q) {
+  const s = " " + String(q || "").toLowerCase() + " ";
+  if (/\btranslate\b|bengali|বাংলা/.test(s)) return DRAFT_BN.translate(q);
+  if (/\bcv\b|resume|সিভি/.test(s)) return DRAFT_BN.cv(q);
+  if (/check|review|documents|কাগজ/.test(s)) return DRAFT_BN.docs(q);
+  if (/email|letter|চিঠি|মেসেজ/.test(s)) return DRAFT_BN.email(q);
+  return DRAFT_BN.plan(q);
+}
+
+/* ---------- Real automation engine (agency workflows) ---------- */
+var AUTO_DEFS = [
+  { id: "expiry", name: "Document expiry sweep", bn: "কাগজের মেয়াদ যাচাই", every: 1440, prompt: "expiry sweep",
+    desc: "Checks every case's documents and writes a warning list for anything expiring in 90 days.",
+    descBn: "প্রতিটি কেসের কাগজ পরীক্ষা করে ৯০ দিনের মধ্যে মেয়াদ শেষ হওয়া কাগজের তালিকা লেখে।" },
+  { id: "followup", name: "Embassy follow-up", bn: "এমব্যাসি ফলো-আপ", every: 10080, prompt: "embassy follow-up",
+    desc: "Lists cases sitting at submitted or embassy and drafts the follow-up message.",
+    descBn: "জমা ও এমব্যাসি ধাপে থাকা কেসের তালিকা করে ফলো-আপ মেসেজের খসড়া লেখে।" },
+  { id: "fees", name: "Fee collection check", bn: "বাকি ফি যাচাই", every: 1440, prompt: "fee check",
+    desc: "Adds up outstanding fees per case and flags the ones overdue by more than 30 days.",
+    descBn: "প্রতি কেসের বাকি ফি যোগ করে ৩০ দিনের বেশি পুরোনো বকেয়া চিহ্নিত করে।" },
+  { id: "brief", name: "Daily morning brief", bn: "সকালের সারসংক্ষেপ", every: 1440, prompt: "monthly report",
+    desc: "Cases by stage, fees collected and what needs action today.",
+    descBn: "ধাপ অনুযায়ী কেস, আদায়কৃত ফি এবং আজ কী করতে হবে।" },
+  { id: "weekly", name: "Weekly agency report", bn: "সাপ্তাহিক রিপোর্ট", every: 10080, prompt: "monthly report",
+    desc: "Weekly totals per country with the strongest and weakest routes.",
+    descBn: "দেশ অনুযায়ী সাপ্তাহিক হিসাব — কোন রুট সবচেয়ে ভালো চলছে।" },
+];
+var RUN_LOG_KEY = "autoRuns";
+function autoRuns() { return gs(RUN_LOG_KEY, []); }
+function saveAutoRuns(v) { ss(RUN_LOG_KEY, v.slice(0, 120)); }
+function autoState() {
+  const st = gs("autoState", null) || {};
+  return st;
+}
+function saveAutoState(st) { ss("autoState", st); }
+function autoDef(id) { return AUTO_DEFS.find((a) => a.id === id); }
+function autoNextAt(id) { const st = autoState(); const d = autoDef(id); return st[id] ? (st[id].next || 0) : 0; }
+function autoEnabled(id) { const st = autoState(); return st[id] ? st[id].on !== false : AUTO_DEFS.find((a) => a.id === id)?.id === "expiry"; }
+function toggleAutoDef(id) {
+  const st = autoState(); const d = autoDef(id);
+  st[id] = st[id] || { on: true, last: 0, next: Date.now() + 60000 };
+  st[id].on = !(st[id].on !== false);
+  if (st[id].on) st[id].next = Date.now() + 60000;
+  saveAutoState(st); render();
+  toast(isBn() ? (st[id].on ? "অটোমেশন চালু" : "অটোমেশন বন্ধ") : (st[id].on ? "Automation on" : "Automation off"));
+}
+function runAutoDef(id, manual) {
+  const d = autoDef(id); if (!d) return;
+  const out = autoWorkflow(id);
+  const st = autoState();
+  st[id] = { on: st[id] ? st[id].on !== false : id === "expiry", last: Date.now(), next: Date.now() + d.every * 60000, runs: ((st[id] && st[id].runs) || 0) + 1 };
+  saveAutoState(st);
+  const log = autoRuns();
+  log.unshift({ id: rid(), def: id, name: isBn() ? d.bn : d.name, at: Date.now(), text: out.text, page: out.page, manual: !!manual });
+  saveAutoRuns(log);
+  try { render(); } catch (e) {}
+  if (typeof renderSidebar === "function") renderSidebar();
+  setTimeout(() => { try { render(); } catch (e) {} }, 20);
+}
+function autoWorkflow(id) {
+  ensureAgency();
+  if (id === "expiry") {
+    const soon = docList().map((d) => ({ d, n: daysTo(d.expiry) })).filter((x) => x.n !== null && x.n <= 90).sort((a, b) => a.n - b.n);
+    return {
+      page: "documents",
+      text: soon.length
+        ? (isBn() ? `${bnDigits(soon.length)}টি কাগজের মেয়াদ ৯০ দিনের মধ্যে শেষ। সবচেয়ে আগে: ${soon.slice(0, 3).map((x) => docName(x.d) + " — " + x.d.applicant + " (" + bnDigits(x.n) + " দিন)").join("; ")}` : `${soon.length} documents expire within 90 days. Soonest: ${soon.slice(0, 3).map((x) => docName(x.d) + " — " + x.d.applicant + " (" + x.n + "d)").join("; ")}`)
+        : (isBn() ? "৯০ দিনের মধ্যে কোনো কাগজের মেয়াদ শেষ হচ্ছে না।" : "No documents expire within 90 days."),
+    };
+  }
+  if (id === "followup") {
+    const list = caseList().filter((c) => ["submitted", "embassy"].includes(c.stage));
+    return { page: "cases", text: list.length
+      ? (isBn() ? `${bnDigits(list.length)}টি কেস এমব্যাসি/জমা ধাপে: ${list.map((c) => c.ref + " (" + c.applicant + ")").join(", ")}। ফলো-আপ খসড়া তৈরি।` : `${list.length} cases at submitted/embassy: ${list.map((c) => c.ref + " (" + c.applicant + ")").join(", ")}. Follow-up drafted.`)
+      : (isBn() ? "এমব্যাসিতে অপেক্ষমাণ কোনো কেস নেই।" : "No cases waiting at the embassy.") };
+  }
+  if (id === "fees") {
+    const due = caseList().filter((c) => (Number(c.feeDue) || 0) > 0);
+    const total = due.reduce((s, c) => s + (Number(c.feeDue) || 0), 0);
+    return { page: "reports", text: due.length
+      ? (isBn() ? `${bnDigits(due.length)}টি কেসে মোট ${money(total)} বাকি: ${due.map((c) => c.ref + " " + money(c.feeDue)).join(", ")}` : `${due.length} cases owe ${money(total)}: ${due.map((c) => c.ref + " " + money(c.feeDue)).join(", ")}`)
+      : (isBn() ? "সব কেসের ফি পরিশোধিত।" : "All fees are settled.") };
+  }
+  const all = caseList();
+  const byStage = CASES.stages.map((s) => (isBn() ? s.bn : s.en) + " " + (isBn() ? bnDigits(all.filter((c) => c.stage === s.k).length) : all.filter((c) => c.stage === s.k).length));
+  const fees = all.reduce((s, c) => s + (Number(c.feePaid) || 0), 0);
+  const docs = docList().filter((d) => { const n = daysTo(d.expiry); return n !== null && n <= 90; }).length;
+  return { page: "reports", text: isBn()
+    ? `মোট ${bnDigits(all.length)}টি কেস · ${byStage.join(" · ")} · আদায় ${money(fees)} · মেয়াদ শেষ হচ্ছে ${bnDigits(docs)}টি কাগজ।`
+    : `${all.length} cases · ${byStage.join(" · ")} · ${money(fees)} collected · ${docs} documents expiring.` };
+}
+function runAllAutomations(manual) {
+  AUTO_DEFS.forEach((d) => { if (autoEnabled(d.id)) runAutoDef(d.id, manual); });
+}
+function autoTickAgency() {
+  const st = autoState();
+  let dueAny = false;
+  AUTO_DEFS.forEach((d) => {
+    const s = st[d.id];
+    if (!s || s.on === false) return;
+    if (!s.next) { st[d.id] = { ...s, next: Date.now() + 60000 }; return; }
+    if (Date.now() >= s.next) { runAutoDef(d.id, false); dueAny = true; }
+  });
+  if (dueAny) saveAutoState(st);
+}
+try { setInterval(() => { try { autoTickAgency(); } catch (e) {} }, 60000); } catch (e) {}
+
+/* ---------- Automation screen (agency workflows + run log) ---------- */
+function automationsAgencyView() {
+  ensureAgency();
+  const st = autoState();
+  const log = autoRuns();
+  const rel = (ms) => {
+    if (!ms) return "—";
+    const diff = ms - Date.now();
+    const abs = Math.abs(diff);
+    const mins = Math.round(abs / 60000);
+    const txt = mins < 60 ? (isBn() ? bnDigits(mins) + " মিনিট" : mins + " min") : mins < 1440 ? (isBn() ? bnDigits(Math.round(mins / 60)) + " ঘণ্টা" : Math.round(mins / 60) + " h") : (isBn() ? bnDigits(Math.round(mins / 1440)) + " দিন" : Math.round(mins / 1440) + " d");
+    return diff > 0 ? (isBn() ? txt + " পরে" : "in " + txt) : (isBn() ? txt + " আগে" : txt + " ago");
+  };
+  return wrap(`
+    ${pageHead(bt("Automations"), isBn() ? "এজেন্সির নিয়মিত কাজ — মেয়াদ যাচাই, ফলো-আপ, বাকি ফি ও রিপোর্ট। অ্যাপ খোলা থাকলেই নিজে চলে।" : "Your agency's recurring work — expiry sweeps, follow-ups, fees and reports. Runs while the app is open.",
+      `<button class="chip" onclick="runAllAutomations(true)">${ic("play", 12)} ${isBn() ? "সব এখনই চালান" : "Run all now"}</button>`)}
+    <div style="display:grid;gap:10px">
+      ${AUTO_DEFS.map((d) => {
+        const on = autoEnabled(d.id);
+        const s = st[d.id] || {};
+        return `<div class="card" style="padding:14px;border-radius:16px;display:flex;gap:12px;align-items:flex-start">
+          <span style="width:34px;height:34px;border-radius:10px;background:${on ? "#111" : "var(--hover)"};color:${on ? "#fff" : "var(--sub)"};display:grid;place-items:center;flex:none">${ic("auto", 16)}</span>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap"><span style="font-size:13.5px;font-weight:650">${esc(isBn() ? d.bn : d.name)}</span>
+              <span class="chip" style="height:20px;font-size:10px;pointer-events:none">${isBn() ? "প্রতি " + bnDigits(d.every === 1440 ? 1 : 7) + (d.every === 1440 ? " দিনে" : " সপ্তাহে") : (d.every === 1440 ? "daily" : "weekly")}</span>
+              ${on ? `<span class="chip" style="height:20px;font-size:10px;pointer-events:none;background:#ecfdf3;color:#15803d">${isBn() ? "চালু" : "on"}</span>` : ""}</div>
+            <div style="font-size:12px;color:var(--sub);margin-top:4px">${esc(isBn() ? d.descBn : d.desc)}</div>
+            <div style="font-size:11px;color:var(--faint);margin-top:6px">${isBn() ? "পরবর্তী" : "Next"}: ${on ? rel(s.next || (Date.now() + 3600000)) : "—"} · ${isBn() ? "চালানো" : "runs"}: ${isBn() ? bnDigits(s.runs || 0) : (s.runs || 0)}</div>
+          </div>
+          <div style="display:flex;gap:6px;flex:none">
+            <button class="chip" style="height:26px;font-size:11px" onclick="runAutoDef('${d.id}', true)">${bt("Run now")}</button>
+            <button class="chip" style="height:26px;font-size:11px" onclick="toggleAutoDef('${d.id}')">${on ? (isBn() ? "বন্ধ" : "Off") : (isBn() ? "চালু" : "On")}</button>
+          </div>
+        </div>`;
+      }).join("")}
+    </div>
+    <div class="cap" style="margin:20px 0 8px">${isBn() ? "রান হিসাব" : "Run log"}</div>
+    ${log.length ? `<div class="card" style="padding:4px 14px">${log.slice(0, 20).map((r) => `<div style="padding:10px 0;border-top:1px solid var(--line-2)">
+      <div style="display:flex;justify-content:space-between;gap:8px;font-size:11.5px;color:var(--faint)"><span>${esc(r.name)}</span><span>${new Date(r.at).toLocaleString()}</span></div>
+      <div style="font-size:12.5px;color:var(--ink);margin-top:3px">${esc(r.text).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>")}</div>
+      ${r.page ? `<button class="chip" style="height:22px;font-size:10.5px;margin-top:6px" onclick="go('${r.page}')">${isBn() ? "খুলুন" : "Open"}</button>` : ""}
+    </div>`).join("")}</div>` : `<div class="card" style="padding:22px;text-align:center;color:var(--faint);font-size:12.5px">${isBn() ? "এখনো কিছু চালানো হয়নি — “সব এখনই চালান” চাপুন।" : "Nothing has run yet — press Run all now."}</div>`}
+  `);
+}
+
+/* ---------- Attachment parsing (passport / CV / job offer) ---------- */
+function attachRead(f) {
+  const ok = /text|json|csv|pdf|word|document|image/.test(f.type || "") || /\.(txt|md|csv|json|pdf|docx?)$/i.test(f.name);
+  if (!ok) { toast(isBn() ? "এই ফাইল পড়া যাবে না" : "Cannot read this file type"); return; }
+  if (/^image\//.test(f.type) && !window.Tesseract) {
+    S.att = { name: f.name, size: f.size, text: "", image: true };
+    toast(isBn() ? "ছবি যুক্ত হয়েছে — তথ্যগুলো লিখে দিন" : "Image attached — type the details");
+    render(); return;
+  }
+  const r = new FileReader();
+  r.onload = () => {
+    let text = String(r.result || "");
+    if (/pdf/i.test(f.type) || /\.pdf$/i.test(f.name)) text = text.replace(/[^\x20-\x7E\n\u0980-\u09FF]/g, " ");
+    S.att = { name: f.name, size: f.size, text: text.slice(0, 4000) };
+    render();
+    const guess = attachParse(text);
+    if (guess) toast(isBn() ? "ফাইল পড়া হয়েছে — তথ্য পাওয়া গেছে" : "File read — details found");
+  };
+  r.onerror = () => toast(isBn() ? "ফাইল পড়া যায়নি" : "Could not read the file");
+  r.readAsText(f);
+}
+function attachParse(text) {
+  const t = String(text || "");
+  const out = {};
+  const pass = t.match(/[A-Z]{2}\d{7}|[A-Z]\d{8}/);
+  if (pass) out.passport = pass[0];
+  const dob = t.match(/(?:date of birth|dob|জন্ম)[^\d]{0,12}(\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{4}-\d{2}-\d{2})/i);
+  if (dob) out.dob = dob[1];
+  const exp = t.match(/(?:expiry|expires|valid until|মেয়াদ)[^\d]{0,12}(\d{1,2}[\/.\-]\d{1,2}[\/.\-]\d{2,4}|\d{4}-\d{2}-\d{2})/i);
+  if (exp) out.expiry = exp[1];
+  const name = t.match(/(?:name|নাম)\s*[:\-]\s*([A-Z][A-Za-z .'-]{3,40})/);
+  if (name) out.name = name[1].trim();
+  const email = t.match(/[\w.+-]+@[\w-]+\.[\w.]{2,}/);
+  if (email) out.email = email[0];
+  const phone = t.match(/(?:\+?88)?01[3-9]\d{8}/);
+  if (phone) out.phone = phone[0];
+  const country = ["Serbia", "Romania", "Croatia", "Poland", "Japan", "UAE", "Qatar", "Malaysia", "UK", "Italy", "Portugal", "South Korea"].find((c) => new RegExp(c, "i").test(t));
+  if (country) out.country = country;
+  return Object.keys(out).length ? out : null;
+}
 
 /* ============================================================
    Install (PWA) + boot
