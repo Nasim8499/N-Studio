@@ -181,9 +181,11 @@
     .dock-global{ left:0; right:0; bottom:24px; }
     .composer{ border-radius:18px !important; }
     main{ padding-bottom:150px; }
-    .hero h1{ font-size:26px !important; line-height:1.3 !important; letter-spacing:-.02em !important; }
+    .hero-h1, .hero h1{ font-size:24px !important; line-height:1.3 !important; letter-spacing:-.02em !important; }
     .hero p{ font-size:14px !important; }
     .hero, .pagehead{ padding-left:16px; padding-right:16px; }
+    .toolgrid-home{ grid-template-columns:1fr 1fr !important; }
+    main .composer textarea{ font-size:15px !important; }
     .composer .c-top{ flex-wrap:wrap; row-gap:4px; }
     .composer textarea{ min-height:22px !important; max-height:110px !important; }
     #main > .pane > .scroll{ padding-bottom:8px; }
@@ -1629,7 +1631,7 @@ function homeView() {
     <div class="scroll" style="flex:1;min-height:0;overflow-y:auto">
       <div style="max-width:780px;margin:0 auto;padding:26px 18px calc(140px + env(safe-area-inset-bottom))">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">${mark(40)}<div style="display:flex;align-items:center;gap:8px">${wordmark(20)}<span class="chip" style="height:20px;font-size:10px;padding:0 7px">beta</span></div></div>
-        <h1 style="font-size:clamp(24px,5.4vw,32px);line-height:1.15;letter-spacing:-1px;font-weight:650;margin:10px 0 6px">What can I do for you?</h1>
+        <h1 class="hero-h1" style="font-size:clamp(24px,5.4vw,32px);line-height:1.15;letter-spacing:-1px;font-weight:650;margin:10px 0 6px">What can I do for you?</h1>
         <p style="font-size:13.5px;color:var(--sub);margin:0 0 18px;max-width:52ch">Your agent runs on a cloud computer — it researches the live web, fills forms and builds pages in the preview panel.</p>
         ${(!S.tasks.some((t) => (t.msgs || []).some((m) => m.role === "agent"))) ? `<div style="margin:0 0 18px">${composerHTML(true)}</div>` : ""}
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px">
@@ -1638,8 +1640,8 @@ function homeView() {
         </div>
         ${toolStrip()}
         ${suggestionRow("home")}
-        <div class="cap" style="margin-bottom:8px">Tools</div>
-        <div class="toolgrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:8px;margin-bottom:12px">
+        <div class="cap" style="margin-bottom:8px">${bt("Tools")}</div>
+        <div class="toolgrid toolgrid-home" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:8px;margin-bottom:12px">
           ${chips.map((c) => `<button class="card" style="height:58px;display:flex;align-items:center;gap:10px;padding:0 13px;text-align:left;cursor:pointer;border-radius:14px;background:var(--card);border:1px solid var(--line);box-shadow:none" onclick="go('${c.k}')">
             <span style="width:30px;height:30px;border-radius:9px;background:var(--hover);display:grid;place-items:center;flex:none">${ic(c.icon, 16)}</span>
             <span style="font-size:13px;font-weight:550;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.label}</span></button>`).join("")}
