@@ -1693,13 +1693,6 @@ var wrap = (inner, extra = "") => `<div class="pane" style="background:transpare
 
 /* ---------- Home (new task) ---------- */
 function homeView() {
-  const chips = [
-    { icon: "pc", label: "Computers", k: "computers" },
-    { icon: "agents", label: "Agents", k: "agents" },
-    { icon: "search", label: "Search", k: "search" },
-    { icon: "auto", label: "Automations", k: "automations" },
-    { icon: "lib", label: "Library", k: "library" },
-  ];
   return `<div class="pane" style="background:transparent;height:100%">
     <div class="scroll" style="flex:1;min-height:0;overflow-y:auto">
       <div style="max-width:780px;margin:0 auto;padding:26px 18px calc(140px + env(safe-area-inset-bottom))">
@@ -1710,18 +1703,6 @@ function homeView() {
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px">
           ${(isBn() ? ["সার্বিয়ার ওয়ার্ক পারমিট চেকলিস্ট", "ভিসা এজেন্সির ওয়েবসাইট বানাও", "UK স্কিলড ওয়ার্কার শর্ত", "জাপান SSW ধাপ"] : ["Serbia work permit checklist", "Build a visa agency website", "UK Skilled Worker requirements", "Japan SSW visa steps"]).map((p) =>
             `<button class="chip" onclick="quickStart('${esc(p)}')">${esc(p)}</button>`).join("")}
-        </div>
-        ${toolStrip()}
-        ${suggestionRow("home")}
-        <div class="cap" style="margin-bottom:8px">${bt("Tools")}</div>
-        <div class="toolgrid toolgrid-home" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:8px;margin-bottom:12px">
-          ${chips.map((c) => `<button class="card" style="height:58px;display:flex;align-items:center;gap:10px;padding:0 13px;text-align:left;cursor:pointer;border-radius:14px;background:var(--card);border:1px solid var(--line);box-shadow:none" onclick="go('${c.k}')">
-            <span style="width:30px;height:30px;border-radius:9px;background:var(--hover);display:grid;place-items:center;flex:none">${ic(c.icon, 16)}</span>
-            <span style="font-size:13px;font-weight:550;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.label}</span></button>`).join("")}
-        </div>
-        <div class="cap" style="margin:20px 0 8px">Recent tasks</div>
-        <div style="display:grid;gap:6px">
-          ${S.tasks.slice(0, 4).map((t) => `<button class="row-task" style="height:44px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:0 12px" onclick="openTask('${t.id}')">${ic("chat", 14)} <span style="flex:1;overflow:hidden;text-overflow:ellipsis">${esc(t.title)}</span>${ic("r", 14)}</button>`).join("") || `<div class="card" style="padding:14px;font-size:12.5px;color:var(--faint)">Your first task will show up here.</div>`}
         </div>
       </div>
     </div>
