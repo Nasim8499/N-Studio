@@ -180,6 +180,10 @@
     .dock,.dock-global{ padding:6px 10px calc(8px + env(safe-area-inset-bottom)); }
     .dock-global{ left:0; right:0; bottom:24px; }
     .composer{ border-radius:18px !important; }
+    main{ padding-bottom:150px; }
+    .hero h1{ font-size:26px !important; line-height:1.3 !important; letter-spacing:-.02em !important; }
+    .hero p{ font-size:14px !important; }
+    .hero, .pagehead{ padding-left:16px; padding-right:16px; }
     .composer .c-top{ flex-wrap:wrap; row-gap:4px; }
     .composer textarea{ min-height:22px !important; max-height:110px !important; }
     #main > .pane > .scroll{ padding-bottom:8px; }
@@ -1517,7 +1521,7 @@ function render() {
     cases: (typeof caseView === "function" ? caseView : moreView), applicants: (typeof applicantView === "function" ? applicantView : moreView), documents: (typeof docsView === "function" ? docsView : moreView), jobs: (typeof jobsView === "function" ? jobsView : moreView), reports: (typeof reportView === "function" ? reportView : moreView) };
   const routeChanged = LAST_ROUTE !== S.route;
   const content = (map[S.route] || homeView)();
-  const showDock = !content.includes('id="prompt"');
+  const showDock = !content.includes('class="dock');
   const wide = innerWidth > 1180;
   const onTask = S.route === "task";
   const stage = onTask ? "" : `<div id="pvStage" class="pane" style="z-index:4;transition:opacity .2s ease;display:flex">${previewCol()}</div>`;
@@ -1652,7 +1656,7 @@ function quickStart(t) { newTaskGo(t); }
 
 /* ---------- Composer (long text prompt box) ---------- */
 function composerHTML(hero) {
-  return `<div class="glass composer" style="border-radius:22px;padding:10px 12px 10px;background:var(--card);border:1px solid var(--line)">
+  return `<div class="dock" class="glass composer" style="border-radius:22px;padding:10px 12px 10px;background:var(--card);border:1px solid var(--line)">
     <div class="c-top" style="display:flex;align-items:center;gap:6px;margin-bottom:8px;min-height:26px">
       <span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--sub);border:1px solid var(--line);border-radius:999px;padding:2px 8px">
         <span style="width:6px;height:6px;border-radius:50%;background:${S.run ? '#f97316' : '#22c55e'}"></span>${S.run ? "Running" : "Stopped"}
