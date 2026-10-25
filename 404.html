@@ -219,6 +219,71 @@
   /* splash for installed app */
   #splash{ position:fixed; inset:0; z-index:300; display:grid; place-items:center; background:var(--app-bg); transition:opacity .4s; }
   #splash.hide{ opacity:0; pointer-events:none; }
+
+  /* chatbox v2 */
+  .cb{ border-radius:22px; padding:10px 12px 8px; background:var(--card); border:1px solid var(--line); box-shadow:var(--shadow); transition:border-color .16s, box-shadow .16s; }
+  .cb.over{ border-color:#f97316; box-shadow:0 0 0 4px rgba(249,115,22,.14), var(--shadow); }
+  .cb-ta{ width:100%; border:0; outline:none; resize:none; background:transparent; font-size:15px; line-height:1.55; min-height:32px; max-height:200px; color:var(--ink); padding:6px 2px 2px; }
+  .cb-bar{ display:flex; align-items:center; gap:5px; padding-top:4px; }
+  .cb-agent{ height:26px; font-size:11px; gap:5px; }
+  .cb-model{ font-size:10px; font-weight:700; letter-spacing:.05em; color:var(--faint); }
+  .cb-dot{ width:6px; height:6px; border-radius:50%; background:#d4d4d8; }
+  .cb-dot.ok{ background:#22c55e; }
+  .cb-send{ width:36px; height:36px; border-radius:50%; display:grid; place-items:center; background:#14120f; color:#fff; box-shadow:0 8px 20px rgba(20,18,15,.24); cursor:pointer; }
+  .cb-send.stop{ background:#dc2626; }
+  .cb-hint{ font-size:10px; color:var(--faint); padding:6px 2px 0; }
+  .att-row{ display:flex; flex-wrap:wrap; gap:6px; padding-bottom:8px; }
+  .att{ display:inline-flex; align-items:center; gap:6px; height:32px; padding:0 5px 0 4px; border-radius:9px; background:var(--hover); font-size:11.5px; max-width:210px; }
+  .att img{ width:24px; height:24px; border-radius:6px; object-fit:cover; }
+  .att-ic{ width:24px; height:24px; border-radius:6px; display:grid; place-items:center; background:#14120f; color:#fff; }
+  .att-meta{ display:flex; flex-direction:column; line-height:1.15; min-width:0; }
+  .att-name{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:120px; font-weight:550; }
+  .att-size{ font-size:9.5px; color:var(--faint); }
+  .att-x{ width:20px; height:20px; border-radius:6px; display:grid; place-items:center; color:var(--faint); cursor:pointer; font-size:11px; background:transparent; }
+  .att-x:hover{ background:var(--line); color:var(--ink); }
+  .q-row{ display:flex; align-items:center; gap:6px; padding:0 0 8px; overflow-x:auto; }
+  .q-lbl{ font-size:9.5px; text-transform:uppercase; letter-spacing:.1em; color:var(--faint); flex:none; }
+  .q-item{ display:inline-flex; align-items:center; gap:4px; height:24px; padding:0 4px 0 8px; border-radius:999px; background:rgba(249,115,22,.1); color:#c2410c; font-size:11px; flex:none; }
+  .q-txt{ max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .cb-head{ height:42px; display:flex; align-items:center; gap:6px; padding:0 12px; border-bottom:1px solid var(--line-2); flex:none; }
+  .cb-title{ font-size:12px; color:var(--faint); display:flex; align-items:center; gap:5px; overflow:hidden; white-space:nowrap; max-width:46vw; }
+  .cb-state{ display:inline-flex; align-items:center; gap:4px; font-size:10px; color:var(--faint); }
+  .cb-state i{ width:5px; height:5px; border-radius:50%; background:#22c55e; }
+  .cb-state.run i{ background:#f97316; }
+  .cb-new{ height:24px; font-size:11px; }
+  .cb-back{ display:none; }
+  .cb-scroll{ flex:1; min-height:0; overflow-y:auto; padding:10px 14px 8px; }
+  .cb-thread{ max-width:720px; margin:0 auto; display:flex; flex-direction:column; gap:14px; padding-bottom:8px; }
+  .bwrap{ display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
+  .b-files{ display:flex; flex-wrap:wrap; gap:4px; margin-top:6px; }
+  .b-file{ font-size:10px; padding:2px 7px; border-radius:6px; background:var(--hover); color:var(--sub); }
+  .mtools{ display:flex; gap:2px; opacity:0; transition:opacity .15s; }
+  .bwrap:hover .mtools, .awrap:hover .mtools{ opacity:1; }
+  @media (hover:none){ .mtools{ opacity:1; } }
+  .mtools button{ font-size:10.5px; color:var(--faint); padding:2px 6px; border-radius:6px; cursor:pointer; background:transparent; }
+  .mtools button:hover{ background:var(--hover); color:var(--ink); }
+  .mtools button.ok{ color:#16a34a; }
+  .awrap{ display:flex; flex-direction:column; gap:2px; }
+  .steps-wrap{ margin:0 0 6px; }
+  .steps-sum{ cursor:pointer; font-size:11px; color:var(--faint); list-style:none; padding:2px 0; }
+  .steps-sum::-webkit-details-marker{ display:none; }
+  .steps-sum::before{ content:"▸ "; }
+  .steps-wrap[open] .steps-sum::before{ content:"▾ "; }
+  .steps-wrap .step{ padding:3px 0; }
+  .steps-wrap .step .dot{ width:14px; height:14px; border-radius:50%; display:grid; place-items:center; border:1px solid var(--line); flex:none; }
+  .cb-empty{ text-align:center; padding:28px 8px; display:grid; gap:8px; justify-items:center; }
+  .cb-empty-t{ font-size:16px; font-weight:650; letter-spacing:-.01em; }
+  .cb-empty-p{ font-size:12.5px; color:var(--sub); max-width:44ch; margin:0; }
+  .cb-sugg{ display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-top:4px; }
+  @media (max-width:860px){
+    .cb-back{ display:grid; }
+    .cb-title{ max-width:38vw; }
+    .cb-hint{ display:none; }
+    .cb-model{ display:none; }
+    .cb-title{ max-width:30vw; }
+    .cb-scroll{ padding:8px 10px 6px; }
+    .dock .cb{ border-radius:18px; }
+  }
 </style>
 </head>
 <body>
@@ -267,6 +332,8 @@ var LS = {
   get(k, d) { try { const v = localStorage.getItem("aws:" + k); return v ? JSON.parse(v) : d; } catch { return d; } },
   set(k, v) { try { localStorage.setItem("aws:" + k, JSON.stringify(v)); } catch {} },
 };
+
+var NAVROUTES = ["cases", "applicants", "documents", "jobs", "reports", "automations", "tasks", "skills", "plugins", "account", "computers", "agents", "search", "library"];
 
 var S = {
   route: "home",
@@ -969,10 +1036,14 @@ async function startRun(text) {
     msg.steps.forEach((s) => { s.state = "done"; });
     msg.html = out.text || "";
     msg.time = "1s";
+    if (out.page) msg.pages = [{ title: (typeof pageTitle === "function" ? pageTitle(out.page) : out.page), type: out.page }];
+    t.msgs.push(msg);
     S.run = null;
     try { saveTasks(); } catch (e) {}
     render();
-    if (out.page) { S.route = out.page; render(); }
+    const sc = $("#chatScroll"); if (sc) sc.scrollTop = sc.scrollHeight;
+    if (out.page) setTimeout(() => toast((isBn() ? "আপডেট হয়েছে — " : "Updated — ") + (typeof pageTitle === "function" ? pageTitle(out.page) : out.page)), 60);
+    try { if (typeof chatQueuePop === "function") chatQueuePop(); } catch (e) {}
     return;
   }
   t.msgs.push(msg);
@@ -1101,6 +1172,7 @@ async function startRun(text) {
   S.run = null;
   LS.set("tasks", S.tasks);
   renderSidebar(); render();
+  try { if (typeof chatQueuePop === "function") chatQueuePop(); } catch (e) {}
 }
 
 function searchPage(q, plan) {
@@ -1519,7 +1591,7 @@ function render() {
   renderSidebar();
   const main = $("#main");
   if (!main) return;
-  const map = { home: homeView, task: taskView, computers: computersView, agents: agentsView, search: searchView, library: libraryView, creations: creationsView, automations: (typeof automationsAgencyView === "function" ? automationsAgencyView : automationsView), skills: skillsView, plugins: pluginsView, account: (typeof accountView === "function" ? accountView : moreView), more: moreView,
+  const map = { home: homeView, task: (typeof chatTaskView === "function" ? chatTaskView : taskView), computers: computersView, agents: agentsView, search: searchView, library: libraryView, creations: creationsView, automations: (typeof automationsAgencyView === "function" ? automationsAgencyView : automationsView), skills: skillsView, plugins: pluginsView, account: (typeof accountView === "function" ? accountView : moreView), more: moreView,
     cases: (typeof caseView === "function" ? caseView : moreView), applicants: (typeof applicantView === "function" ? applicantView : moreView), documents: (typeof docsView === "function" ? docsView : moreView), jobs: (typeof jobsView === "function" ? jobsView : moreView), reports: (typeof reportView === "function" ? reportView : moreView) };
   const routeChanged = LAST_ROUTE !== S.route;
   const content = (map[S.route] || homeView)();
@@ -1534,6 +1606,7 @@ function render() {
   main.innerHTML = content + stage + (showDock ? `<div class="dock dock-global${split ? " in-split" : ""}">${composerHTML(false)}</div>` : "");
   if (wide) { const ds = main.querySelector("#pvStage > .preview-col"); if (ds) { ds.style.height = "100%"; ds.style.minHeight = "0"; } }
   try { renderFoot(); } catch (e) {}
+  try { if (typeof chatAfterRender === "function") chatAfterRender(); } catch (e) {}
   document.body.classList.toggle("is-task", onTask);
   LAST_ROUTE = S.route;
   if (S.route === "task") {
@@ -1791,8 +1864,11 @@ function renderAgentMsg(m, live) {
         <span style="font-size:13px;font-weight:600">Agent</span>
         <span class="chip" style="height:18px;font-size:10px;padding:0 6px;border-radius:5px">${esc(S.model)}</span>
       </div>
-      <div style="font-size:11.5px;color:var(--faint);margin-bottom:8px">Worked for ${esc(m.time || "0s")}</div>
-      ${stepsHTML}
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+        <span style="font-size:11.5px;color:var(--faint)">${isBn() ? "সময় লেগেছে" : "Worked for"} ${esc(m.time || "0s")}</span>
+        ${m.engine ? `<span class="chip" style="height:16px;font-size:9px;padding:0 5px;border-radius:4px;color:var(--faint)">${m.engine === "gemini" ? "Gemini" : (isBn() ? "বিল্ট-ইন" : "built-in")}</span>` : ""}
+      </div>
+      ${m.steps && m.steps.length ? `<details class="steps-wrap"${m.steps.some((x) => x.state === "run") ? " open" : ""}><summary class="steps-sum">${m.steps.filter((x) => x.state === "done").length}/${m.steps.length} ${isBn() ? "ধাপ" : "steps"}</summary>${stepsHTML}</details>` : ""}
       ${m.html ? `<div class="msg" style="margin-top:${m.steps ? '12px' : '0'}">${mdBlock(m.html)}</div>` : ""}
       ${live && S.run ? `<div style="display:flex;align-items:center;gap:8px;color:#ea580c;font-size:12.5px;margin-top:6px"><span class="dots"><i></i><i></i><i></i></span> working in the cloud computer</div>` : ""}
       ${m.pages && m.pages.length ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;padding-top:10px;border-top:1px dashed var(--line)">
@@ -3584,6 +3660,297 @@ function attachParse(text) {
   const country = ["Serbia", "Romania", "Croatia", "Poland", "Japan", "UAE", "Qatar", "Malaysia", "UK", "Italy", "Portugal", "South Korea"].find((c) => new RegExp(c, "i").test(t));
   if (country) out.country = country;
   return Object.keys(out).length ? out : null;
+}
+
+/* ============================================================
+   Chatbox v2 — attachments, actions, queue, quick replies
+   ============================================================ */
+var CHAT = { atts: [], queue: [] };
+try { CHAT.queue = LS.get("chatQueue", []) || []; } catch (e) { CHAT.queue = []; }
+
+function chatBn(en, bn) { return (typeof isBn === "function" && isBn()) ? bn : en; }
+function chatSize(n) { return n > 1048576 ? (n / 1048576).toFixed(1) + " MB" : Math.max(1, Math.round(n / 1024)) + " KB"; }
+var CHAT_KIND = { d: "doc", i: "image", s: "sheet", p: "pdf", t: "text" };
+
+function chatAddFile(f) {
+  if (!f) return;
+  if (f.size > 6 * 1024 * 1024) { toast(chatBn("File is over 6 MB", "ফাইলটি ৬ এমবির বেশি")); return; }
+  var name = f.name || "file";
+  var kind = /^image\//.test(f.type) ? "image" : /pdf$/i.test(name) ? "pdf" : /sheet|csv|excel/i.test(f.type + name) ? "sheet" : "doc";
+  var item = { id: rid(), name: name, size: f.size, type: f.type, kind: kind, text: null, thumb: null };
+  var push = function () { CHAT.atts.push(item); CHAT.atts = CHAT.atts.slice(0, 6); chatRenderAtts(); };
+  var fr = new FileReader();
+  if (kind === "image") { fr.onload = function () { item.thumb = fr.result; push(); }; fr.readAsDataURL(f); }
+  else { fr.onload = function () { var raw = String(fr.result || ""); item.text = (/pdf/i.test(raw.slice(0, 400)) ? "" : raw).slice(0, 200000); push(); }; fr.readAsText(f); }
+}
+
+function chatFiles(list) {
+  var files = Array.prototype.slice.call(list || []);
+  if (!files.length) return;
+  files.forEach(chatAddFile);
+  toast(chatBn(files.length + " file added", files.length + "টি ফাইল যোগ হয়েছে"));
+  setTimeout(function () { var ta = $("#prompt"); if (ta) ta.focus(); }, 60);
+}
+
+function chatBrowse(kind) {
+  var input = document.createElement("input");
+  input.type = "file"; input.multiple = true;
+  if (kind === "image") input.accept = "image/*";
+  else if (kind === "folder") input.webkitdirectory = true;
+  else input.accept = ".pdf,.doc,.docx,.txt,.csv,.xls,.xlsx,.jpg,.jpeg,.png";
+  input.onchange = function () { chatFiles(input.files); };
+  input.click();
+}
+
+function chatRenderAtts() {
+  var el = $("#chatAtts");
+  if (!el) return;
+  if (!CHAT.atts.length) { el.style.display = "none"; el.innerHTML = ""; return; }
+  el.style.display = "flex";
+  el.innerHTML = CHAT.atts.map(function (a) {
+    var icon = a.thumb ? '<img src="' + a.thumb + '" alt="">' : '<span class="att-ic">' + ic(a.kind === "image" ? "image" : a.kind === "sheet" ? "lib" : "doc", 13) + "</span>";
+    return '<span class="att">' + icon +
+      '<span class="att-meta"><span class="att-name">' + esc(a.name) + '</span><span class="att-size">' + chatSize(a.size) + "</span></span>" +
+      '<button class="att-x" onclick="chatRemove(\'' + a.id + '\')" aria-label="Remove">&#10005;</button></span>';
+  }).join("");
+}
+
+function chatRemove(id) { CHAT.atts = CHAT.atts.filter(function (a) { return a.id !== id; }); chatRenderAtts(); }
+function chatClearAtts() { CHAT.atts = []; chatRenderAtts(); }
+
+function chatRenderQueue() {
+  var el = $("#chatQueue");
+  if (!el) return;
+  if (!CHAT.queue.length) { el.style.display = "none"; el.innerHTML = ""; return; }
+  el.style.display = "flex";
+  el.innerHTML = '<span class="q-lbl">' + chatBn("Next up", "এরপর") + "</span>" + CHAT.queue.map(function (q, i) {
+    return '<span class="q-item"><span class="q-txt">' + esc(q.slice(0, 64)) + '</span><button class="att-x" onclick="chatQueueDrop(' + i + ')" aria-label="Remove">&#10005;</button></span>';
+  }).join("");
+}
+function chatQueueDrop(i) { CHAT.queue.splice(i, 1); LS.set("chatQueue", CHAT.queue.slice(0, 20)); chatRenderQueue(); }
+function chatQueueAdd(text) {
+  if (!text || !text.trim()) return;
+  CHAT.queue.push(text.trim());
+  LS.set("chatQueue", CHAT.queue.slice(0, 20));
+  chatRenderQueue();
+  toast(chatBn("Queued — sends when this run finishes", "সারিতে রাখা হলো — এবারের কাজ শেষ হলে যাবে"));
+}
+
+function chatCopy(txt, btn) {
+  var done = function () { if (btn) { btn.classList.add("ok"); setTimeout(function () { btn.classList.remove("ok"); }, 1400); } toast(chatBn("Copied", "কপি হয়েছে")); };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done, function () { chatCopyFallback(txt, done); });
+  else chatCopyFallback(txt, done);
+}
+function chatCopyFallback(txt, done) {
+  var ta = document.createElement("textarea");
+  ta.value = txt; document.body.appendChild(ta); ta.select();
+  try { document.execCommand("copy"); } catch (e) {}
+  ta.remove(); if (done) done();
+}
+
+function chatEditAt(i) {
+  var t = activeTask(); var m = t && t.msgs[i];
+  if (!m) return;
+  if (S.run) { toast(chatBn("Wait for this run to finish", "এই কাজ শেষ হওয়া পর্যন্ত অপেক্ষা করুন")); return; }
+  t.msgs = t.msgs.slice(0, i);
+  saveTasks(); S.route = "task"; render();
+  setTimeout(function () { chatSetText(m.text || ""); }, 160);
+}
+
+function chatRetry(i) {
+  var t = activeTask(); var m = t && t.msgs[i];
+  if (!m) return;
+  if (S.run) { toast(chatBn("Wait for this run to finish", "এই কাজ শেষ হওয়া পর্যন্ত অপেক্ষা করুন")); return; }
+  var a = t.msgs[i + 1];
+  t.msgs.splice(i, a && a.role === "agent" ? 2 : 1);
+  saveTasks(); S.route = "task"; render();
+  setTimeout(function () { try { startRun(m.text); } catch (e) {} }, 180);
+}
+
+function chatExplain(i) {
+  var t = activeTask(); var m = t && t.msgs[i];
+  if (!m) return;
+  S.route = "task"; render();
+  setTimeout(function () { chatSetText(chatBn("Explain this in more detail:\n", "এটা আরও বিস্তারিত বুঝিয়ে দিন:\n") + String(m.text || "").slice(0, 400)); }, 160);
+}
+
+function chatSpeak(i) {
+  var t = activeTask(); var m = t && t.msgs[i];
+  var txt = String((m && (m.html || m.text)) || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  if (!txt || !window.speechSynthesis) { toast(chatBn("Speech is not available here", "এখানে ভয়েস পড়া যাবে না")); return; }
+  var u = new SpeechSynthesisUtterance(txt.slice(0, 600));
+  u.lang = (typeof isBn === "function" && isBn()) ? "bn-BD" : "en-US";
+  speechSynthesis.cancel(); speechSynthesis.speak(u);
+}
+
+function chatSetText(v) {
+  var ta = $("#prompt");
+  if (!ta) return;
+  ta.value = v;
+  try { autoGrow(ta); } catch (e) {}
+  ta.focus();
+  try { ta.setSelectionRange(ta.value.length, ta.value.length); } catch (e) {}
+}
+
+function chatQuickSet(text) { chatSetText(text); }
+
+function chatStartFresh() {
+  var t = newTask("New task");
+  S.activeId = t.id; S.route = "task";
+  render();
+  setTimeout(function () { chatClearAtts(); chatSetText(""); }, 180);
+}
+
+function chatDropSetup() {
+  var zone = $("#chatZone");
+  if (!zone || zone.__drop) return;
+  zone.__drop = true;
+  zone.addEventListener("dragover", function (e) { e.preventDefault(); var cb = zone.querySelector(".cb"); if (cb) cb.classList.add("over"); });
+  zone.addEventListener("dragleave", function (e) { var cb = zone.querySelector(".cb"); if (cb && !zone.contains(e.relatedTarget)) cb.classList.remove("over"); });
+  zone.addEventListener("drop", function (e) {
+    e.preventDefault();
+    var cb = zone.querySelector(".cb"); if (cb) cb.classList.remove("over");
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) chatFiles(e.dataTransfer.files);
+  });
+}
+
+/* ---------- composer ---------- */
+function composerHTML2() {
+  return '<div class="cb" ondragenter="this.classList.add(\'over\')" ondragleave="this.classList.remove(\'over\')" ondrop="event.preventDefault();this.classList.remove(\'over\');chatFiles(event.dataTransfer.files)">' +
+    '<div id="chatAtts" class="att-row" style="display:none"></div>' +
+    '<div id="chatQueue" class="q-row" style="display:none"></div>' +
+    '<textarea id="prompt" class="cb-ta" rows="1" placeholder="' + chatBn("Message the agent — paste a passport detail, or drop a file…", "এজেন্টকে লিখুন — পাসপোর্টের তথ্য পেস্ট করুন, বা ফাইল ছাড়ুন…") + '" oninput="autoGrow(this)" onkeydown="if(event.key===\'Enter\'&&!event.shiftKey&&!event.isComposing){event.preventDefault();chatSend()}"></textarea>' +
+    '<div class="cb-bar">' +
+      '<button class="iconbtn" onclick="chatBrowse(\'file\')" title="' + chatBn("Attach file", "ফাইল সংযুক্ত করুন") + '" aria-label="Attach">' + ic("plus", 17) + "</button>" +
+      '<button class="iconbtn" onclick="chatBrowse(\'image\')" title="' + chatBn("Photo or scan", "ছবি বা স্ক্যান") + '" aria-label="Image">' + ic("image", 17) + "</button>" +
+      '<button class="iconbtn" onclick="chatBrowse(\'folder\')" title="' + chatBn("Attach a folder", "ফোল্ডার") + '" aria-label="Folder">' + ic("folder", 17) + "</button>" +
+      '<button class="iconbtn" onclick="toggleVoice()" title="' + (S.voice ? chatBn("Stop recording", "রেকর্ডিং বন্ধ") : chatBn("Voice input", "কণ্ঠে লিখুন")) + '" aria-label="Voice" style="' + (S.voice ? "color:#dc2626" : "") + '">' + ic(S.voice ? "stop" : "mic", 17) + "</button>" +
+      '<button class="chip cb-agent" onclick="openAgentMenu()" title="' + chatBn("Choose agent", "এজেন্ট বাছুন") + '">' + ic("agents", 12) + " " + esc(S.agent || "Auto") + "</button>" +
+      '<span style="flex:1"></span>' +
+      '<span class="cb-model" title="' + esc(gemLabel()) + '">' + (gemReady() ? "GEMINI" : "KB") + " · " + esc(gemLabel().replace("Gemini ", "")) + "</span>" +
+      '<span class="cb-dot' + (gemReady() ? " ok" : "") + '"></span>' +
+      (S.run
+        ? '<button class="cb-send stop" onclick="stopRun()" title="' + chatBn("Stop", "থামান") + '" aria-label="Stop">' + ic("stop", 16) + "</button>"
+        : '<button class="cb-send" onclick="chatSend()" title="' + chatBn("Send", "পাঠান") + '" aria-label="Send">' + ic("arrowUp", 17) + "</button>") +
+    "</div>" +
+    '<div class="cb-hint">' + chatBn("Enter sends · Shift+Enter new line · drag files into the box", "এন্টার = পাঠান · শিফট+এন্টার = নতুন লাইন · বক্সে ফাইল ছাড়ুন") + "</div>" +
+  "</div>";
+}
+
+/* ---------- messages ---------- */
+function chatPageChips(m, i) {
+  return (m.pages || []).map(function (p) {
+    if (typeof NAVROUTES !== "undefined" && NAVROUTES.indexOf(p.type) >= 0) return '<button onclick="chatOpenPage(\'' + p.type + '\')">' + ic("r", 11) + " " + esc(p.title) + "</button>";
+    return '<button onclick="openBuilt(' + i + ')">' + ic(p.type === "search" ? "search" : p.type === "research" ? "globe" : "pc", 11) + " " + esc(p.title) + "</button>";
+  }).join("");
+}
+
+function chatTools(m, i, role) {
+  var title = esc(JSON.stringify(String(m.text || "")));
+  if (role === "user") {
+    return '<div class="mtools">' +
+      '<button onclick="chatCopy(' + title + ', this)">' + chatBn("Copy", "কপি") + "</button>" +
+      '<button onclick="chatEditAt(' + i + ')">' + chatBn("Edit", "সম্পাদনা") + "</button>" +
+      '<button onclick="chatRetry(' + i + ')">' + chatBn("Retry", "আবার") + "</button></div>";
+  }
+  var plain = String(m.html || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  return '<div class="mtools">' +
+    '<button onclick="chatCopy(' + esc(JSON.stringify(plain)) + ', this)">' + chatBn("Copy", "কপি") + "</button>" +
+    '<button onclick="chatExplain(' + (i - 1) + ')">' + chatBn("Explain", "ব্যাখ্যা") + "</button>" +
+    '<button onclick="chatSpeak(' + i + ')">' + chatBn("Read aloud", "শুনুন") + "</button>" + chatPageChips(m, i) + "</div>";
+}
+
+function chatBubble(i, m) {
+  var files = (m.files || []).map(function (f) { return '<span class="b-file">' + esc(f) + "</span>"; }).join("");
+  return '<div class="bwrap fi"><div class="bubble">' + esc(m.text) + (files ? '<div class="b-files">' + files + "</div>" : "") + "</div>" + chatTools(m, i, "user") + "</div>";
+}
+
+function chatEmptyState() {
+  var s = (typeof isBn === "function" && isBn())
+    ? ["নতুন কেস: সার্বিয়া ওয়েল্ডার", "এই মাসে মেয়াদ শেষ এমন কাগজ", "পাসপোর্ট থেকে কেস বানাও", "ভিসা প্যাক বানাও"]
+    : ["New case: Serbia welder", "Documents expiring this month", "Build a case from a passport", "Generate the visa pack"];
+  return '<div class="cb-empty"><div>' + mark(38) + '</div>' +
+    '<div class="cb-empty-t">' + chatBn("Start with one messy message", "একটি সাধারণ বার্তা দিয়েই শুরু করুন") + "</div>" +
+    '<p class="cb-empty-p">' + chatBn("Drop a passport scan, paste a job offer, or describe the case. The agent fills the workspace and keeps every step.", "পাসপোর্ট স্ক্যান ছাড়ুন, জব অফার পেস্ট করুন বা কেসের কথা লিখুন — বাকিটা এজেন্ট করে দেবে।") + "</p>" +
+    '<div class="cb-sugg">' + s.map(function (p) { return '<button class="chip" onclick="chatQuickSet(' + esc(JSON.stringify(p)) + ')">' + esc(p) + "</button>"; }).join("") + "</div></div>";
+}
+
+function chatThread(msgs) {
+  return msgs.map(function (m, i) {
+    return m.role === "user" ? chatBubble(i, m) : '<div class="awrap fi">' + renderAgentMsg(m, false) + ((!S.run || S.run.taskId !== activeTaskId()) ? chatTools(m, i, "agent") : "") + "</div>";
+  }).join("") + '<div id="liveAgent"></div>';
+}
+
+function pageTitle(k) {
+  var m = { cases: ["কেস", "Cases"], applicants: ["আবেদনকারী", "Applicants"], documents: ["কাগজপত্র", "Documents"], jobs: ["চাকরি", "Jobs"], reports: ["রিপোর্ট", "Reports"], automations: ["অটোমেশন", "Automations"], tasks: ["কাজ", "Tasks"] };
+  var v = m[k] || [k, k];
+  return (typeof isBn === "function" && isBn()) ? v[0] : v[1];
+}
+
+function chatOpenPage(k) { S.route = k; render(); }
+
+function activeTaskId() { return activeTask() ? activeTask().id : null; }
+
+function chatHead() {
+  var t = activeTask();
+  var title = String((t && (t.msgs.find(function (m) { return m.role === "user"; }) || {}).text) || (t && t.title) || "").slice(0, 60);
+  return '<div class="cb-head">' +
+    '<button class="iconbtn cb-back" onclick="go(\'home\')" aria-label="Back">' + ic("l", 16) + "</button>" +
+    '<span class="cb-title">' + ic("chat", 12) + " " + esc(title) + "</span>" +
+    '<span class="cb-state' + (S.run ? " run" : "") + '"><i></i>' + (S.run ? chatBn("working", "চলছে") : chatBn("ready", "প্রস্তুত")) + "</span>" +
+    '<span style="flex:1"></span>' +
+    '<button class="chip cb-new" onclick="chatStartFresh()">' + chatBn("New", "নতুন") + "</button>" +
+    '<button class="iconbtn" onclick="openPvSheet()" title="' + chatBn("Preview", "প্রিভিউ") + '">' + ic("panel", 15) + "</button>" +
+    '<button class="iconbtn" onclick="openTaskMenu()" title="' + chatBn("Task menu", "টাস্ক মেনু") + '">' + ic("more", 15) + "</button></div>";
+}
+
+function chatTaskView() {
+  var t = activeTask();
+  if (!t) return homeView() + '<div id="pvStage" style="display:none"></div>';
+  var body = t.msgs.length ? chatThread(t.msgs) : chatEmptyState();
+  if (innerWidth <= 1180) {
+    setTimeout(function () { var st = $("#pvStage"); if (st) st.style.display = "none"; document.body.classList.remove("has-pv-stage"); }, 0);
+    return '<div class="pane" style="background:transparent;height:100%;display:flex;flex-direction:column;min-height:0">' +
+      chatHead() +
+      '<div id="chatScroll" class="scroll cb-scroll"><div class="cb-thread">' + body + "</div></div>" +
+      '<div class="dock" id="chatZone">' + composerHTML2() + "</div></div>";
+  }
+  return '<div class="split" style="height:100%;display:flex;gap:8px;min-height:0">' +
+    '<div class="pane" style="background:transparent;flex:1;display:flex;flex-direction:column;min-height:0">' +
+      chatHead() +
+      '<div id="chatScroll" class="scroll cb-scroll"><div class="cb-thread">' + body + "</div></div>" +
+      '<div class="dock" id="chatZone">' + composerHTML2() + "</div>" +
+    "</div>" + previewCol() + "</div>";
+}
+
+function chatAfterRender() {
+  chatDropSetup();
+  chatRenderAtts();
+  chatRenderQueue();
+  var sc = $("#chatScroll");
+  if (sc && S.route === "task" && !CHAT.queue.length) sc.scrollTop = sc.scrollHeight;
+}
+
+/* ---------- send (wraps the original submitPrompt) ---------- */
+function chatSend() {
+  var ta = $("#prompt");
+  if (!ta) { submitPrompt(); return; }
+  if (!ta.value.trim() && !CHAT.atts.length) return;
+  if (S.run) { chatQueueAdd(ta.value); ta.value = ""; return; }
+  if (CHAT.atts.length) {
+    var atts = CHAT.atts.slice();
+    var lines = atts.map(function (a) {
+      var facts = (typeof attachParse === "function" && a.text) ? attachParse(a.text, a.name) : null;
+      if (facts && facts.length) return "- " + a.name + ": " + facts.join("; ");
+      var snip = String(a.text || "").replace(/\s+/g, " ").trim().slice(0, 160);
+      return "- " + a.name + " (" + chatSize(a.size) + ")" + (snip ? ": " + snip : "");
+    });
+    if (!ta.value.trim()) ta.value = chatBn("Read the attached files and update the case.", "সংযুক্ত ফাইলগুলো পড়ে কেসটি ঠিক করুন।");
+    ta.value = ta.value + "\n\n" + chatBn("Attached files:", "সংযুক্ত ফাইল:") + "\n" + lines.join("\n");
+    S.file = atts[0].name;
+    chatClearAtts();
+  }
+  submitPrompt();
 }
 
 /* ============================================================
