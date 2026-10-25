@@ -2949,9 +2949,9 @@ function caseView() {
     ${pageHead(bt("Cases"), isBn() ? "আবেদনকারী থেকে ভিসা পর্যন্ত প্রতিটি কেস এক জায়গায়।" : "Every applicant, from intake to visa in hand, in one pipeline.",
       `<button class="chip" onclick="newCase()">${ic("plus", 13)} ${bt("New case")}</button><button class="chip" onclick="caseCsv()">${bt("Export CSV")}</button>`)}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:14px">
-      <div class="card" style="padding:12px"><div class="cap">${bt("Total cases")}</div><div class="num" style="font-size:26px;font-weight:650;letter-spacing:-1px;margin-top:2px">${bnDigits(all.length)}</div></div>
-      <div class="card" style="padding:12px"><div class="cap">${bt("Open cases")}</div><div class="num" style="font-size:26px;font-weight:650;letter-spacing:-1px;margin-top:2px">${bnDigits(all.filter((c) => !["approved", "departed"].includes(c.stage)).length)}</div></div>
-      <div class="card" style="padding:12px"><div class="cap">${bt("Approved this month")}</div><div class="num" style="font-size:26px;font-weight:650;letter-spacing:-1px;margin-top:2px">${bnDigits(all.filter((c) => c.stage === "approved" && new Date(c.updated || c.created).getMonth() === new Date().getMonth()).length)}</div></div>
+      <div class="card" style="padding:12px"><div class="cap">${bt("Total cases")}</div><div class="num" style="font-family:'Hind Siliguri','Noto Sans Bengali',sans-serif;font-size:24px;font-weight:650;letter-spacing:-1px;margin-top:2px">${bnDigits(all.length)}</div></div>
+      <div class="card" style="padding:12px"><div class="cap">${bt("Open cases")}</div><div class="num" style="font-family:'Hind Siliguri','Noto Sans Bengali',sans-serif;font-size:24px;font-weight:650;letter-spacing:-1px;margin-top:2px">${bnDigits(all.filter((c) => !["approved", "departed"].includes(c.stage)).length)}</div></div>
+      <div class="card" style="padding:12px"><div class="cap">${bt("Approved this month")}</div><div class="num" style="font-family:'Hind Siliguri','Noto Sans Bengali',sans-serif;font-size:24px;font-weight:650;letter-spacing:-1px;margin-top:2px">${bnDigits(all.filter((c) => c.stage === "approved" && new Date(c.updated || c.created).getMonth() === new Date().getMonth()).length)}</div></div>
       <div class="card" style="padding:12px"><div class="cap">${bt("Fees collected")}</div><div class="num" style="font-size:22px;font-weight:650;letter-spacing:-.5px;margin-top:4px">${money(all.reduce((s, c) => s + (Number(c.feePaid) || 0), 0))}</div></div>
     </div>
     <div class="toolstrip" style="margin-bottom:10px">
@@ -3254,10 +3254,10 @@ function reportView() {
     ${pageHead(bt("Reports"), isBn() ? "এই মাসের কেস, আদায়কৃত ফি ও সফলতার হার।" : "This month's cases, fees collected and success rate.",
       `<button class="chip" onclick="caseCsv()">${bt("Export CSV")}</button>`)}
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:16px">
-      <div class="card" style="padding:12px"><div class="cap">${bt("This month")}</div><div class="num" style="font-size:26px;font-weight:650;margin-top:2px">${bnDigits(thisMonth.length)}</div></div>
-      <div class="card" style="padding:12px"><div class="cap">${bt("Approved this month")}</div><div class="num" style="font-size:26px;font-weight:650;margin-top:2px">${bnDigits(thisMonth.filter((c) => c.stage === "approved").length)}</div></div>
+      <div class="card" style="padding:12px"><div class="cap">${bt("This month")}</div><div class="num" style="font-family:'Hind Siliguri','Noto Sans Bengali',sans-serif;font-size:24px;font-weight:650;margin-top:2px">${bnDigits(thisMonth.length)}</div></div>
+      <div class="card" style="padding:12px"><div class="cap">${bt("Approved this month")}</div><div class="num" style="font-family:'Hind Siliguri','Noto Sans Bengali',sans-serif;font-size:24px;font-weight:650;margin-top:2px">${bnDigits(thisMonth.filter((c) => c.stage === "approved").length)}</div></div>
       <div class="card" style="padding:12px"><div class="cap">${bt("Fees collected")}</div><div class="num" style="font-size:20px;font-weight:650;margin-top:5px">${money(all.reduce((s, c) => s + (Number(c.feePaid) || 0), 0))}</div></div>
-      <div class="card" style="padding:12px"><div class="cap">${bt("Success rate")}</div><div class="num" style="font-size:26px;font-weight:650;margin-top:2px">${bnDigits(success)}%</div></div>
+      <div class="card" style="padding:12px"><div class="cap">${bt("Success rate")}</div><div class="num" style="font-family:'Hind Siliguri','Noto Sans Bengali',sans-serif;font-size:24px;font-weight:650;margin-top:2px">${bnDigits(success)}%</div></div>
       <div class="card" style="padding:12px"><div class="cap">${isBn() ? "বাকি ফি" : "Fees due"}</div><div class="num" style="font-size:20px;font-weight:650;margin-top:5px;color:#b45309">${money(all.reduce((s, c) => s + (Number(c.feeDue) || 0), 0))}</div></div>
     </div>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px">
